@@ -5,5 +5,6 @@ const TemplateController = require("../controllers/Template");
 const templateController = new TemplateController();
 
 router.get("/", templateController.getAllTemplate);
+router.get("/category/:categoryNo", templateController.getAllTemplByCate);
 
 module.exports = router;

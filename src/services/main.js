@@ -12,6 +12,12 @@ class MainService {
 
     return allBanner;
   };
+
+  getCategory = async () => {
+    const allCategory = await this.mainRepository.allCategory();
+
+    return allCategory;
+  };
 }
 
 module.exports = MainService;

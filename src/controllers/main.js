@@ -15,6 +15,16 @@ class MainController {
       res.status(200).json({ result: 0, msg: "광고 배너 조회", data });
     } catch {}
   };
+
+  getCategory = async (req, res, next) => {
+    try {
+      const allCategory = await this.mainService.getCategory();
+
+      const data = { category: allCategory };
+
+      res.status(200).json({ result: 0, msg: "카테고리 조회", data });
+    } catch {}
+  };
 }
 
 module.exports = MainController;

@@ -11,5 +11,19 @@ class mainRepository {
     ];
     return allBanner;
   };
+
+  allCategory = async () => {
+    const query = `SELECT post_category_no, post_category_title, view_seq FROM tb_post_category 
+    WHERE status = 0 
+    ORDER BY view_seq`;
+
+    //디비 커넥션 맺어서 쿼리문으로 데이터 가져오기, 아래는 임시 데이터
+    const allCategory = [
+      { post_category_no: 7, post_category_title: "생일", view_seq: 0 },
+      { post_category_no: 2, post_category_title: "축하", view_seq: 1 },
+    ];
+    return allCategory;
+  };
 }
+
 module.exports = mainRepository;

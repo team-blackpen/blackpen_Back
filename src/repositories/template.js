@@ -1,6 +1,11 @@
 class PostRepository {
   allTemplate = async (userNo, startPage, endPage, categoryNo) => {
-    let wish = 0;
+    let wish = 0,
+      addWish = "",
+      addJoin = "",
+      addUserNo = "",
+      addCate = "";
+
     if (userNo) {
       addWish = "Pw.status AS wish,";
       addJoin = "JOIN tb_post_wishlist Pw A ON Pw.post_no = P.post_no";
@@ -12,7 +17,7 @@ class PostRepository {
     }
 
     const query = `SELECT post_no,  post_title, post_description, post_img,
-    post_category_no, post_category_title, ${addWish} artist_no, artist_name 
+    post_category_no, post_category_title, ${addWish} artist_no, artist_name
     FROM tb_post P
     JOIN tb_post_img Pi ON Pi.post_no = P.post_no
     JOIN tb_post_category_rel Pcr ON Pcr.post_no = P.post_no

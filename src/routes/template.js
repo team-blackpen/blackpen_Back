@@ -6,5 +6,6 @@ const templateController = new TemplateController();
 
 router.get("/", templateController.getAllTemplate);
 router.get("/category/:categoryNo", templateController.getAllTemplByCate);
+router.get("/detail/:postNo", templateController.getTemplateDetail);
 
 module.exports = router;

@@ -25,6 +25,17 @@ class TemplateController {
       res.status(200).json({ result: 0, msg: "편지 카테고리 조회", data: getAllTemplByCate });
     } catch {}
   };
+
+  getTemplateDetail = async (req, res, next) => {
+    try {
+      const userNo = 1; //undefined;
+      const postNo = req.params;
+
+      const getTemplateDetail = await this.templateService.getTemplateDetail(userNo, postNo);
+
+      res.status(200).json({ result: 0, msg: "편지 상세 조회", data: getTemplateDetail });
+    } catch {}
+  };
 }
 
 module.exports = TemplateController;

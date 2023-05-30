@@ -32,6 +32,18 @@ class TemplateService {
 
     // return allTemplByCate;
   };
+
+  getTemplateDetail = async (userNo, postNo) => {
+    const template = await this.templateRepository.templateDetail(userNo, postNo);
+    const templateImg = await this.templateRepository.templateImg(postNo);
+    const templateDetailImg = await this.templateRepository.templateDetailImg(postNo);
+    const templateHash = await this.templateRepository.templateHash(postNo);
+    template.post_img = templateImg;
+    template.post_detail_img = templateDetailImg;
+    template.hashtag = templateHash;
+
+    return template;
+  };
 }
 
 module.exports = TemplateService;

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const TemplateController = require("../controllers/Template");
+const TemplateController = require("../controllers/template");
 const templateController = new TemplateController();
 
 router.get("/", templateController.getAllTemplate);

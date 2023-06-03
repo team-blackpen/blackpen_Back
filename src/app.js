@@ -4,6 +4,13 @@ const Router = require("./routes/index.js");
 const app = express();
 const port = process.env.PORT;
 
+const passport = require("passport");
+const passportConfig = require("./passport");
+
+passportConfig();
+app.use(passport.initialize());
+// app.use(passport.session());
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });

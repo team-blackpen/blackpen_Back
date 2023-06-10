@@ -1,6 +1,6 @@
 const dayjs = require("dayjs");
 
-const PostListRepository = require("../repositories/postList");
+const PostListRepository = require("../repositories/postlist");
 
 class PostListService {
   postListRepository = new PostListRepository();

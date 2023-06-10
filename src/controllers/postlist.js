@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-const PostListService = require("../services/postList");
+const PostListService = require("../services/postlist");
 
 class PostListController {
   postListService = new PostListService();

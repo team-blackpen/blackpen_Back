@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const authRouter = require("./auth");
-const postListRouter = require("./postList");
+const postListRouter = require("./postlist");
 const templateRouter = require("./template");
 // const postRouter = require("./post");
 

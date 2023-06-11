@@ -39,6 +39,12 @@ class PostListService {
 
     return allPost;
   };
+
+  getPostWish = async (userNo) => {
+    const allPostWish = await this.postListRepository.allPostWish(userNo);
+
+    return allPostWish;
+  };
 }
 
 module.exports = PostListService;

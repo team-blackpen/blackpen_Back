@@ -119,6 +119,29 @@ class PostListRepository {
       return err;
     }
   };
+
+  allPostWish = async (userNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT user_no, post_no
+        FROM tb_post_wish
+        WHERE user_no = ? AND status = 1;`;
+
+        let [results] = await connection.query(query, userNo);
+
+        connection.release();
+
+        return results;
+      } catch (err) {
+        console.log("Query Error!");
+        return err;
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      return err;
+    }
+  };
 }
 
 module.exports = PostListRepository;

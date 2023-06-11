@@ -62,13 +62,16 @@ class PostListRepository {
     }
   };
 
-  allPost = async (cateNo, userNo) => {
+  allPost = async (cateNo, pageNum, limit) => {
     try {
+      let addLimit = "";
+      pageNum ? (addLimit = `LIMIT ${pageNum}, ${limit};`) : (addLimit = "LIMIT 10;");
+
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT P.post_no, P.post_title, P.post_description, 
         Pi.post_img_no, Pi.img_url,
-        Pc.post_cate_no, Pc.cate_title, Pc.cate_img_url, 
+        Pc.post_cate_no, Pc.cate_title, Pc.cate_img_url,
         A.artist_no, A.artist_name
         FROM tb_post P
         JOIN tb_post_img Pi ON Pi.post_no = P.post_no
@@ -78,7 +81,7 @@ class PostListRepository {
         JOIN tb_artist A ON A.artist_no = Ar.artist_no 
         WHERE P.status = 0 AND Pc.post_cate_no = ? AND Pi.view_seq = 0
         ORDER BY Pc.view_seq, Pcr.view_seq
-        LIMIT 10;`;
+        ${addLimit}`;
 
         let [results] = await connection.query(query, cateNo);
 

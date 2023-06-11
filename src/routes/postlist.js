@@ -8,5 +8,6 @@ router.get("/banner", postListController.getBanner);
 router.get("/category", postListController.getCategory);
 router.get("/", postListController.getAllPost);
 router.get("/wish", postListController.getPostWish);
+router.get("/category/:post_cate_no", postListController.getPostCategory);
 
 module.exports = router;

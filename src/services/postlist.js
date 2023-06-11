@@ -45,6 +45,24 @@ class PostListService {
 
     return allPostWish;
   };
+
+  getPostCategory = async (cateNo, pageNum, limit) => {
+    let allPost = [];
+
+    const posts = await this.postListRepository.allPost(cateNo, pageNum, limit);
+
+    if (posts.length > 0) {
+      for (let i in posts) {
+        const hashs = await this.postListRepository.allHash(posts[i].post_no);
+
+        hashs.length > 0 ? (posts[i].hashtag = hashs) : (posts[i].hashtag = []);
+      }
+
+      allPost.push(posts);
+    }
+
+    return allPost;
+  };
 }
 
 module.exports = PostListService;

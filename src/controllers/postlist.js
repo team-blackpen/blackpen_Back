@@ -49,6 +49,25 @@ class PostListController {
       res.status(200).json({ result: 0, msg: "편지지 찜목록 조회", data });
     } catch {}
   };
+
+  getPostCategory = async (req, res, next) => {
+    try {
+      const cateNo = req.params.post_cate_no;
+      let pageNum = req.query.page;
+      const limit = 5;
+
+      if (pageNum > 1) pageNum = limit * (pageNum - 1) + 1;
+
+      const allPostCategory = await this.postListService.getPostCategory(cateNo, pageNum, limit);
+
+      const data = { postCategoryList: allPostCategory };
+
+      res.status(200).json({ result: 0, msg: "카테고리별 편지지 조회", data });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = PostListController;

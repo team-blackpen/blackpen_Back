@@ -28,6 +28,16 @@ class PostListController {
       next(err);
     }
   };
+
+  getAllPost = async (req, res, next) => {
+    try {
+      const allPost = await this.postListService.getAllPost();
+
+      const data = { postList: allPost };
+
+      res.status(200).json({ result: 0, msg: "편지지 전체 조회", data });
+    } catch {}
+  };
 }
 
 module.exports = PostListController;

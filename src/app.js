@@ -4,7 +4,6 @@ const Router = require("./routes/index.js");
 const app = express();
 const port = process.env.PORT;
 const cors = require("cors");
-
 const domains = ["http://localhost:3000", "https://jeonhada-xoqca.run.goorm.site"];
 
 const corsOptions = {

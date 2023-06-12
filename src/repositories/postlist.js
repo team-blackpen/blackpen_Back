@@ -20,7 +20,7 @@ class PostListRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT post_cate_no, cate_title, view_seq FROM tb_post_cate
+        const query = `SELECT post_cate_no, cate_title, cate_eng_title, view_seq FROM tb_post_cate
         WHERE status = 0
         ORDER BY view_seq`;
 

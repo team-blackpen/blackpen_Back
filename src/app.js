@@ -4,6 +4,7 @@ const Router = require("./routes/index.js");
 const app = express();
 const port = process.env.PORT;
 const cors = require("cors");
+const errorHandler = require("./middlewares/errorHandler");
 
 const domains = ["http://localhost:3000", "https://jeonhada-xoqca.run.goorm.site"];
 
@@ -14,11 +15,13 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const passport = require("passport");
-const passportConfig = require("./passport");
+app.use(express.json());
 
-passportConfig();
-app.use(passport.initialize());
+// const passport = require("passport");
+// const passportConfig = require("./passport");
+
+// passportConfig();
+// app.use(passport.initialize());
 // app.use(passport.session());
 
 app.get("/", (req, res) => {
@@ -26,6 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", Router);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(port, "포트로 서버가 열렸어요!");

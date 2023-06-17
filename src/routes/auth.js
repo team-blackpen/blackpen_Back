@@ -5,11 +5,6 @@ const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
-// 로그인페이지로 이동
-router.get("/kakao", passport.authenticate("kakao"));
-// 카카오에서 설정한 redicrect url을 통해 요청 재전달
-router.get("/kakao/callback", kakaoCallback);
-
 // 카카오로그인
 const kakaoCallback = (req, res, next) => {
   try {
@@ -36,5 +31,10 @@ const kakaoCallback = (req, res, next) => {
     next(error);
   }
 };
+
+// 로그인페이지로 이동
+router.get("/kakao", passport.authenticate("kakao"));
+// 카카오에서 설정한 redicrect url을 통해 요청 재전달
+router.get("/kakao/callback", kakaoCallback);
 
 module.exports = router;

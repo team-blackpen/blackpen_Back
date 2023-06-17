@@ -17,11 +17,11 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-// const passport = require("passport");
-// const passportConfig = require("./passport");
+const passport = require("passport");
+const passportConfig = require("./passport");
 
-// passportConfig();
-// app.use(passport.initialize());
+passportConfig();
+app.use(passport.initialize());
 // app.use(passport.session());
 
 app.get("/", (req, res) => {

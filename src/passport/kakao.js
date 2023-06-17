@@ -48,7 +48,7 @@ module.exports = () => {
 
             connection.release();
 
-            return user;
+            return;
           } catch (err) {
             console.log("Query Error!", err);
             throw new ErrorCustom(500, "Query Error!");

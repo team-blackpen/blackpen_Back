@@ -3,6 +3,7 @@ const KakaoStrategy = require("passport-kakao").Strategy;
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
+const dayjs = require("dayjs");
 
 // const User = require('../models/user');
 
@@ -22,26 +23,28 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         try {
+          const regDt = dayjs().format("YYYY-MM-DD hh:mm:ss");
           const connection = await pool.getConnection(async (corn) => corn);
           try {
-            const query = `SELECT * FROM tb_user_social WHERE social_id = ? AND login_type = ?`;
+            const query = `SELECT * FROM tb_user WHERE social_id = ? AND login_type = ?`;
 
             let [results] = await connection.query(query, [profile.id, "kakao"]);
 
             if (results) {
               done(null, results); // 로그인 인증 완료
             } else {
-              const query2 = `INSERT INTO tb_user_social (user_no, login_type, social_id, access_token) VALUES (?, "kakao", ?, ?);`; // user_no은 자동 증가 해도되나?
+              const query2 = `INSERT INTO tb_user (nickname, social_id, access_token, login_type, reg_dt) 
+              VALUES (?, ?, ?, "kakao", ?);`;
 
-              let [results2] = await connection.query(query2, [profile.id, accessToken]);
+              let [results2] = await connection.query(query2, [profile_nickname, profile.id, accessToken, regDt]);
 
-              const query3 = `INSERT INTO tb_user (user_no, user_name, login_type) VALUES (?, ?, "kakao");`; // user_no은 자동 증가 해도되나?
+              // const query3 = `INSERT INTO tb_user (user_no, user_name, login_type) VALUES (?, ?, "kakao");`; // user_no은 자동 증가 해도되나?
 
-              let [results3] = await connection.query(query3, [results2.user_no, profile_nickname]); // user_no도 result2에 남을려나? 안남으면 서브쿼리 넣어서 셀렉트문 넣어주면 될려나?
+              // let [results3] = await connection.query(query3, [results2.user_no, profile_nickname]); // user_no도 result2에 남을려나? 안남으면 서브쿼리 넣어서 셀렉트문 넣어주면 될려나?
 
               const user = {
                 userNo: results2.user_no,
-                nickname: profile_nickname,
+                nickname: results2.nickname,
               };
               done(null, user);
             }

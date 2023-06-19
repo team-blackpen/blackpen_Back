@@ -23,29 +23,39 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         try {
+			
+		
+			console.log("profile", profile)
+			console.log(typeof(profile.id))
+			console.log(profile.id)
           const regDt = dayjs().format("YYYY-MM-DD hh:mm:ss");
           const connection = await pool.getConnection(async (corn) => corn);
           try {
             const query = `SELECT * FROM tb_user WHERE social_id = ? AND login_type = ?`;
 
             let [results] = await connection.query(query, [profile.id, "kakao"]);
+			  
+			  console.log("results", results)
 
-            if (results) {
-              done(null, results); // 로그인 인증 완료
+            if (results.length > 0) {
+              done(null, results[0]); // 로그인 인증 완료
             } else {
-              const query2 = `INSERT INTO tb_user (nickname, social_id, access_token, login_type, reg_dt) 
-              VALUES (?, ?, ?, "kakao", ?);`;
+				console.log(2222222)
+			    const query2 = `INSERT INTO tb_user (nickname, social_id, access_token, login_type, reg_dt) 
+			    VALUES (?, ?, ?, "kakao", ?);`;
 
-              let [results2] = await connection.query(query2, [profile_nickname, profile.id, accessToken, regDt]);
-
+			    let [results2] = await connection.query(query2, [profile.displayName, profile.id, accessToken, regDt]);
+ 				console.log("results2", results2)
               // const query3 = `INSERT INTO tb_user (user_no, user_name, login_type) VALUES (?, ?, "kakao");`; // user_no은 자동 증가 해도되나?
 
               // let [results3] = await connection.query(query3, [results2.user_no, profile_nickname]); // user_no도 result2에 남을려나? 안남으면 서브쿼리 넣어서 셀렉트문 넣어주면 될려나?
 
               const user = {
-                userNo: results2.user_no,
-                nickname: results2.nickname,
+                user_no: results2.insertId,
+                nickname: profile.displayName,
               };
+				
+				console.log("user2", user);
               done(null, user);
             }
 

@@ -60,7 +60,7 @@ class PostListController {
 
       const allPostCategory = await this.postListService.getPostCategory(cateNo, pageNum, limit);
 
-      const data = { postCategoryList: allPostCategory };
+      const data = { cate_title: allPostCategory.cateTitle, postCategoryList: allPostCategory.postCateList };
 
       res.status(200).json({ result: 0, msg: "카테고리별 편지지 조회", data });
     } catch (err) {

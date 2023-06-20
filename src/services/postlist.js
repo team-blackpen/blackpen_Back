@@ -47,7 +47,7 @@ class PostListService {
   };
 
   getPostCategory = async (cateNo, pageNum, limit) => {
-    let allPost = [];
+    let allPostCategory = {};
 
     const posts = await this.postListRepository.allPost(cateNo, pageNum, limit);
 
@@ -58,10 +58,13 @@ class PostListService {
         hashs.length > 0 ? (posts[i].hashtag = hashs) : (posts[i].hashtag = []);
       }
 
-      allPost.push(posts);
+      allPostCategory.postCateList = posts;
+      allPostCategory.cateTitle = posts[0].cate_title;
+
+      return allPostCategory;
     }
 
-    return allPost;
+    return allPostCategory;
   };
 }
 

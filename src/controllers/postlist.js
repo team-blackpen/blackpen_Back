@@ -53,12 +53,11 @@ class PostListController {
   getPostCategory = async (req, res, next) => {
     try {
       const cateNo = req.params.post_cate_no;
-      let pageNum = req.query.page;
+      let offset = req.query.page - 1;
       const limit = 5;
+      offset = offset * limit;
 
-      if (pageNum > 1) pageNum = limit * (pageNum - 1) + 1;
-
-      const allPostCategory = await this.postListService.getPostCategory(cateNo, pageNum, limit);
+      const allPostCategory = await this.postListService.getPostCategory(cateNo, limit, offset);
 
       const data = { cate_title: allPostCategory.cateTitle, postCategoryList: allPostCategory.postCateList };
 

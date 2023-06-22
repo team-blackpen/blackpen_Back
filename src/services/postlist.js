@@ -46,10 +46,10 @@ class PostListService {
     return allPostWish;
   };
 
-  getPostCategory = async (cateNo, pageNum, limit) => {
+  getPostCategory = async (cateNo, limit, offset) => {
     let allPostCategory = {};
 
-    const posts = await this.postListRepository.allPost(cateNo, pageNum, limit);
+    const posts = await this.postListRepository.allPost(cateNo, limit, offset);
 
     if (posts.length > 0) {
       for (let i in posts) {

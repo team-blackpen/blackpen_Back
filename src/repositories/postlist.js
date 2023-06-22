@@ -62,10 +62,10 @@ class PostListRepository {
     }
   };
 
-  allPost = async (cateNo, pageNum, limit) => {
+  allPost = async (cateNo, limit, offset) => {
     try {
       let addLimit = "";
-      pageNum ? (addLimit = `LIMIT ${pageNum}, ${limit};`) : (addLimit = "LIMIT 10;");
+      limit ? (addLimit = `LIMIT ${limit} OFFSET ${offset};`) : (addLimit = "LIMIT 10;");
 
       const connection = await pool.getConnection(async (corn) => corn);
       try {

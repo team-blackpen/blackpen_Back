@@ -7,9 +7,12 @@ class PostListRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT post_cate_no, cate_title, view_seq FROM tb_post_cate
-        WHERE status = 0
-        ORDER BY view_seq`;
+        const query = `SELECT C.post_cate_no, C.cate_title, C.view_seq 
+        FROM tb_post_cate C
+	    	JOIN tb_post_cate_rel Pcr ON Pcr.post_cate_no = C.post_cate_no
+        WHERE C.status = 0
+        GROUP BY Pcr.post_cate_no
+        ORDER BY C.view_seq;`;
 
         let [results] = await connection.query(query);
 
@@ -32,7 +35,7 @@ class PostListRepository {
       try {
         const query = `SELECT post_cate_no FROM tb_post_cate
         WHERE status = 0
-        ORDER BY view_seq`;
+        ORDER BY view_seq;`;
 
         let [results] = await connection.query(query);
 
@@ -68,7 +71,7 @@ class PostListRepository {
         JOIN tb_artist A ON A.artist_no = Ar.artist_no 
         WHERE P.status = 0 AND Pc.post_cate_no = ? AND Pi.view_seq = 0
         ORDER BY Pc.view_seq, Pcr.view_seq
-        ${addLimit}`;
+        ${addLimit};`;
 
         let [results] = await connection.query(query, cateNo);
 
@@ -135,21 +138,3 @@ class PostListRepository {
 }
 
 module.exports = PostListRepository;
-
-// 일단 되는거
-// pool.getConnection(function (err, connection) {
-//   if (err) {
-//     console.log("🚀 ~ file: main.js:31 ~ mainRepository ~ err:", err);
-//     throw err;
-//   } else {
-//     connection.query(query, function (err, results) {
-//       if (err) throw err;
-//       else {
-//         console.log("🚀 ~ file: main.js:36 ~ mainRepository ~ connection.query ~ results:", results);
-//         result = results;
-//         console.log(results);
-//       }
-//     });
-//     connection.release();
-//   }
-// });

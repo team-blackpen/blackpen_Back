@@ -9,6 +9,10 @@ const isLogin = async (req, res, next) => {
   try {
     const accessToken = req.headers.accesstoken;
 
+    if (!accessToken) {
+      throw new ErrorCustom(401, "다시 로그인 해주세요.");
+    }
+
     if (accessToken) {
       const accessAuthType = accessToken.split(" ")[0];
 
@@ -24,6 +28,10 @@ const isLogin = async (req, res, next) => {
         accessVerified = jwt.verify(accessAuthToken, process.env.JWT_KEY);
       } catch (error) {
         throw new ErrorCustom(401, "토큰이 유효하지 않습니다.");
+      }
+
+      if (accessAuthToken === "null" || accessAuthToken === "undefined" || !accessAuthToken) {
+        throw new ErrorCustom(401, "로그인 후 사용해주세요.");
       }
 
       try {

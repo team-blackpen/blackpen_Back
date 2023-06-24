@@ -29,7 +29,8 @@ class PostListController {
 
   getPostWish = async (req, res, next) => {
     try {
-      const userNo = res.locals.user.user_no;
+      const user = res.locals.user;
+      const userNo = user.user_no;
       const allPostWish = await this.postListService.getPostWish(userNo);
 
       const data = { postWishList: allPostWish };

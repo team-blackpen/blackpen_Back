@@ -1,6 +1,3 @@
-const express = require("express");
-const app = express();
-
 const PostListService = require("../services/postlist");
 
 class PostListController {
@@ -21,6 +18,7 @@ class PostListController {
 
   getAllPost = async (req, res, next) => {
     try {
+      console.log("🚀 ~ file: postlist.js:25 ~ PostListController ~ getAllPost= ~ user:", user);
       const allPost = await this.postListService.getAllPost();
 
       const data = { postList: allPost };
@@ -31,13 +29,15 @@ class PostListController {
 
   getPostWish = async (req, res, next) => {
     try {
-      const userNo = 1; // 나중에 유저 정보 받아서 넣을 예정
+      const userNo = res.locals.user.user_no;
       const allPostWish = await this.postListService.getPostWish(userNo);
 
       const data = { postWishList: allPostWish };
 
       res.status(200).json({ result: 0, msg: "편지지 찜목록 조회", data });
-    } catch {}
+    } catch (err) {
+      next(err);
+    }
   };
 
   getPostCategory = async (req, res, next) => {

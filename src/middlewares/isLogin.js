@@ -5,7 +5,7 @@ const UserRepository = require("../repositories/user");
 const userRepository = new UserRepository();
 
 // 단순히 로그인 비로그인을 확인하는 미들웨어(비로그인시 locals에 유저정보 담지 않고 그냥 next로 넘어감)
-module.exports = async (req, res, next) => {
+const isLogin = async (req, res, next) => {
   try {
     const accessToken = req.headers.accesstoken;
 
@@ -52,3 +52,5 @@ module.exports = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = { isLogin };

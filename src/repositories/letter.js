@@ -3,13 +3,22 @@ const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
 
 class LetterRepository {
-  getTmpLetter = async (userNo) => {
+  getTmpLetter = async (userNo, postNo, letterNo) => {
     try {
+      let addWhere = "";
+      let params = [];
+      if (letterNo != "") {
+        addWhere = `letter_no = ?`;
+        params.push(letterNo);
+      } else {
+        addWhere = `user_no = ? AND post_no = ?`;
+        params.push(userNo, postNo);
+      }
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT letter_no FROM tb_letter WHERE user_no = ? AND status = 0`;
+        const query = `SELECT letter_no FROM tb_letter WHERE ${addWhere} AND status = 0`;
 
-        let [letterNo] = await connection.query(query, [userNo]);
+        let [letterNo] = await connection.query(query, [params]);
 
         return letterNo[0];
       } catch (err) {

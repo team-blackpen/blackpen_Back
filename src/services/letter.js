@@ -8,13 +8,14 @@ class LetterService {
   creatLetter = async (userNo, letter) => {
     const regDt = dayjs().format("YYYY-MM-DD hh:mm:ss");
 
+    const letterNo = letter.letter_no;
     const postNo = letter.post_no;
     const contents = letter.letter;
     const font = letter.font;
 
     if (letter.status == 0) {
       // 임시편지 저장?
-      const tmpLetter_no = await this.letterRepository.getTmpLetter(userNo); // 임시편지 확인
+      const tmpLetter_no = await this.letterRepository.getTmpLetter(userNo, postNo, letterNo); // 임시편지 확인
       if (!tmpLetter_no) {
         const creatTmpLetter = await this.letterRepository.insTmpLetter(userNo, postNo, contents, font, regDt); // 임시편지 없으면 내용까지만 생성
       } else {

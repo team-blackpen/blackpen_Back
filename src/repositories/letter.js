@@ -255,6 +255,39 @@ class LetterRepository {
       return err;
     }
   };
+
+  getLetterList = async (reUserNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT L.letter_no, L.user_no, L.post_no, Li.sender, L.send_dt 
+          FROM tb_letter L 
+          JOIN tb_letter_info Li ON L.letter_no = Li.letter_no
+          WHERE L.recipient_user_no = ? AND L.status = 2`;
+
+        let [letterList] = await connection.query(query, reUserNo);
+
+        if (letterList.length > 0) {
+          for (let i in letterList) {
+            const queryimg = `SELECT letter_img_no, letter_img_url FROM tb_letter_img WHERE letter_no = ?`;
+            let [letterImg] = await connection.query(queryimg, letterList[i].letter_no);
+
+            letterList[i].img = letterImg;
+          }
+        }
+
+        return letterList;
+      } catch (err) {
+        console.log("Query Error!", err);
+        throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      throw new ErrorCustom(500, "DB ERROR!");
+    }
+  };
 }
 
 module.exports = LetterRepository;

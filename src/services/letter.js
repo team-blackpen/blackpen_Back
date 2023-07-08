@@ -49,6 +49,15 @@ class LetterService {
       throw new ErrorCustom(400, "편지작성 실패");
     }
   };
+
+  getLetterList = async (reUserNo) => {
+    try {
+      const letterList = await this.letterRepository.getLetterList(reUserNo);
+      return letterList;
+    } catch (err) {
+      throw new ErrorCustom(400, "편지 보관함 조회 실패");
+    }
+  };
 }
 
 module.exports = LetterService;

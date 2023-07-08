@@ -19,6 +19,21 @@ class LetterController {
       next(err);
     }
   };
+
+  // 편지보관함 조회
+  getLetterList = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const reUserNo = user.user_no; // 받는사람 정보
+
+      const letterList = await this.letterService.getLetterList(reUserNo);
+
+      res.status(200).json({ result: 0, msg: "편지 보관함 조회 성공", data: { letterList } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

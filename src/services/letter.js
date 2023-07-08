@@ -80,6 +80,15 @@ class LetterService {
       }
     }
   };
+
+  getLetter = async (userNo, letterNo) => {
+    try {
+      const getLetter = await this.letterRepository.getLetter(userNo, letterNo);
+      return getLetter;
+    } catch (err) {
+      throw new ErrorCustom(400, "편지 조회 실패");
+    }
+  };
 }
 
 module.exports = LetterService;

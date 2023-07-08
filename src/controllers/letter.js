@@ -82,6 +82,22 @@ class LetterController {
       next(err);
     }
   };
+
+  // 편지 조회
+  getLetter = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      let letterNo = req.query.letterNo;
+
+      const letter = await this.letterService.getLetter(userNo, letterNo);
+
+      res.status(200).json({ result: 0, msg: "편지 조회 성공", data: { letter } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

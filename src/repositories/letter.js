@@ -341,6 +341,41 @@ class LetterRepository {
       throw new ErrorCustom(500, "DB ERROR!");
     }
   };
+
+  // 편지 조회
+  getLetter = async (userNo, letterNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT L.letter_no, L.user_no, L.post_no, L.recipient_user_no, Li.recipient, Li.sender, Lc.letter_contents_no, Lc.letter_contents 
+          FROM tb_letter L 
+          JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
+          JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 0
+          WHERE L.letter_no = ? AND L.recipient_user_no = ? AND L.status = 2;`;
+
+        let [letter] = await connection.query(query, [letterNo, userNo]);
+
+        if (letter.length > 0) {
+          for (let i in letter) {
+            const queryimg = `SELECT letter_img_no, letter_img_url FROM tb_letter_img WHERE letter_no = ?;`;
+            let [letterImg] = await connection.query(queryimg, letter[i].letter_no);
+
+            letter[i].img = letterImg;
+          }
+        }
+
+        return letter[0];
+      } catch (err) {
+        console.log("Query Error!", err);
+        throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      throw new ErrorCustom(500, "DB ERROR!");
+    }
+  };
 }
 
 module.exports = LetterRepository;

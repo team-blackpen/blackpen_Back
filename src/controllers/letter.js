@@ -83,7 +83,7 @@ class LetterController {
     }
   };
 
-  // 편지 조회
+  // 유저 편지 조회
   getLetter = async (req, res, next) => {
     try {
       const user = res.locals.user;
@@ -93,6 +93,22 @@ class LetterController {
       const letter = await this.letterService.getLetter(userNo, letterNo);
 
       res.status(200).json({ result: 0, msg: "편지 조회 성공", data: { letter } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
+  // 게스트 편지 조회
+  getLetterHash = async (req, res, next) => {
+    try {
+      const userNo = 0;
+      const letterNo = 0;
+      const hashLetter = req.params.hash_letter;
+
+      const letter = await this.letterService.getLetter(userNo, letterNo, hashLetter);
+
+      res.status(200).json({ result: 0, msg: "게스트 편지 조회 성공", data: { letter } });
     } catch (err) {
       console.log(err);
       next(err);

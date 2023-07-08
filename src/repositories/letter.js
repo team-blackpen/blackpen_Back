@@ -343,17 +343,29 @@ class LetterRepository {
   };
 
   // 편지 조회
-  getLetter = async (userNo, letterNo) => {
+  getLetter = async (userNo, letterNo, hashLetter) => {
     try {
+      let where = "";
+      let params = [];
+      if (hashLetter) {
+        // 게스트 편지 조회
+        where = `hash_no = ?`;
+        params.push(hashLetter);
+      } else {
+        // 유저 편지 조회
+        where = `L.letter_no = ? AND L.recipient_user_no = ?`;
+        params.push(letterNo, userNo);
+      }
+
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT L.letter_no, L.user_no, L.post_no, L.recipient_user_no, Li.recipient, Li.sender, Lc.letter_contents_no, Lc.letter_contents 
           FROM tb_letter L 
           JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
           JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 0
-          WHERE L.letter_no = ? AND L.recipient_user_no = ? AND L.status = 2;`;
+          WHERE ${where} AND L.status = 2;`;
 
-        let [letter] = await connection.query(query, [letterNo, userNo]);
+        let [letter] = await connection.query(query, params);
 
         if (letter.length > 0) {
           for (let i in letter) {

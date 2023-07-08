@@ -81,9 +81,9 @@ class LetterService {
     }
   };
 
-  getLetter = async (userNo, letterNo) => {
+  getLetter = async (userNo, letterNo, hashLetter) => {
     try {
-      const getLetter = await this.letterRepository.getLetter(userNo, letterNo);
+      const getLetter = await this.letterRepository.getLetter(userNo, letterNo, hashLetter);
       return getLetter;
     } catch (err) {
       throw new ErrorCustom(400, "편지 조회 실패");

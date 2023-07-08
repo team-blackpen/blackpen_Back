@@ -11,5 +11,6 @@ router.get("/tmp/list", login.isLogin, letterController.getLetterTmpList);
 router.delete("/list", login.isLogin, letterController.deleteLetter);
 router.delete("/tmp/list", login.isLogin, letterController.deleteLetterTmp);
 router.get("/", login.isLogin, letterController.getLetter);
+router.get("/guest/:hash_letter", letterController.getLetterHash);
 
 module.exports = router;

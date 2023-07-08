@@ -316,6 +316,31 @@ class LetterRepository {
       throw new ErrorCustom(500, "DB ERROR!");
     }
   };
+
+  // 편지 삭제
+  deleteLetter = async (userNo, letterList, tmp) => {
+    try {
+      let where = "";
+      where = tmp ? `user_no = ? AND status = 0` : `recipient_user_no = ?`; // 임시편지 삭제면 작성자 유저 확인, 받은편지면 받은 유저 확인
+
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `UPDATE tb_letter SET status = 3 WHERE ${where} AND letter_no IN ( ? );`;
+
+        let [deleteLetter] = await connection.query(query, [userNo, letterList]);
+
+        return deleteLetter.changedRows;
+      } catch (err) {
+        console.log("Query Error!", err);
+        throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      throw new ErrorCustom(500, "DB ERROR!");
+    }
+  };
 }
 
 module.exports = LetterRepository;

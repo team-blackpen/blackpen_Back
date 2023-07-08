@@ -49,6 +49,39 @@ class LetterController {
       next(err);
     }
   };
+
+  // 편지 리스트 삭제
+  deleteLetter = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const letterList = req.body.letterList;
+
+      const deleteLetter = await this.letterService.deleteLetter(userNo, letterList);
+
+      res.status(200).json({ result: 0, msg: "편지 삭제 성공", data: { deleteLetter } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
+  // 임시 편지 리스트 삭제
+  deleteLetterTmp = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const letterList = req.body.letterList;
+      const tmp = true;
+
+      const deleteLetter = await this.letterService.deleteLetter(userNo, letterList, tmp);
+
+      res.status(200).json({ result: 0, msg: "임시 편지 삭제 성공", data: { deleteLetter } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

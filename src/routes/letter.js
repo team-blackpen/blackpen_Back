@@ -8,5 +8,7 @@ const letterController = new LetterController();
 router.post("/", login.isLogin, letterController.creatLetter);
 router.get("/list", login.isLogin, letterController.getLetterList);
 router.get("/tmp/list", login.isLogin, letterController.getLetterTmpList);
+router.delete("/list", login.isLogin, letterController.deleteLetter);
+router.delete("/tmp/list", login.isLogin, letterController.deleteLetterTmp);
 
 module.exports = router;

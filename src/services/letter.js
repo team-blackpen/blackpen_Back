@@ -67,6 +67,19 @@ class LetterService {
       throw new ErrorCustom(400, "임시 편지 보관함 조회 실패");
     }
   };
+
+  deleteLetter = async (userNo, letterList, tmp) => {
+    try {
+      const deleteLetter = await this.letterRepository.deleteLetter(userNo, letterList, tmp);
+      return deleteLetter;
+    } catch (err) {
+      if (tmp) {
+        throw new ErrorCustom(400, "임시 편지 삭제 실패");
+      } else {
+        throw new ErrorCustom(400, "편지 삭제 실패");
+      }
+    }
+  };
 }
 
 module.exports = LetterService;

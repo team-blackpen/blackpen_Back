@@ -256,6 +256,7 @@ class LetterRepository {
     }
   };
 
+  // 받은편지함 조회
   getLetterList = async (reUserNo) => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
@@ -277,6 +278,33 @@ class LetterRepository {
         }
 
         return letterList;
+      } catch (err) {
+        console.log("Query Error!", err);
+        throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      throw new ErrorCustom(500, "DB ERROR!");
+    }
+  };
+
+  // 임시편지함 조회
+  getLetterTmpList = async (userNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT L.letter_no, L.user_no, L.post_no, IF(L.upt_dt, L.upt_dt, L.reg_dt) AS upt_dt, Lc.letter_contents_no, Lc.letter_contents, Pi.post_img_no, Pi.img_url 
+          FROM tb_letter L 
+          JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 0 
+          JOIN tb_post_img Pi ON L.post_no = Pi.post_no AND Pi.view_seq = 0 AND Pi.status = 0 
+          WHERE L.user_no = ? AND L.status = 0
+          ORDER BY upt_dt DESC;`;
+
+        let [letterTmpList] = await connection.query(query, userNo);
+
+        return letterTmpList;
       } catch (err) {
         console.log("Query Error!", err);
         throw new ErrorCustom(500, "Query Error!");

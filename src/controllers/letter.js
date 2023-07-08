@@ -88,7 +88,7 @@ class LetterController {
     try {
       const user = res.locals.user;
       const userNo = user.user_no;
-      let letterNo = req.query.letterNo;
+      let letterNo = req.query.letter_no;
 
       const letter = await this.letterService.getLetter(userNo, letterNo);
 

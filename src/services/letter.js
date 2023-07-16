@@ -10,16 +10,16 @@ class LetterService {
     try {
       const now = dayjs().format("YYYY-MM-DD hh:mm:ss");
 
-      let letterNo = letter.letter_no;
-      const postNo = letter.post_no;
+      let letterNo = letter.letterNo;
+      const postNo = letter.postNo;
       const stage = letter.stage;
-      const contents = letter.letter_contents;
-      const fontNo = letter.font_no;
+      const contents = letter.letterContents;
+      const fontNo = letter.fontNo;
       const info = letter.info;
 
       if (letter.status == 0) {
         // 임시편지 저장?
-        if (letterNo == "") {
+        if (letterNo == 0) {
           // 임시저장이면서 편지 번호가 없음
           const creatTmpLetter = await this.letterRepository.insTmpLetter(userNo, postNo, stage, contents, fontNo, info, now); // 임시편지 없으면 내용까지만 생성
 
@@ -31,8 +31,8 @@ class LetterService {
       } else {
         // 편지 작성완료
 
-        const img = letter.letter_img;
-        if (letterNo == "") {
+        const img = letter.letterImg;
+        if (letterNo == 0) {
           // 작성완료이면서 편지번호 없음
           const creatLetter = await this.letterRepository.insLetter(userNo, postNo, stage, contents, fontNo, info, img, now); // 임시편지 없으면 바로 편지발송 준비
           letterNo = creatLetter;

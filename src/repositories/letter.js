@@ -60,11 +60,11 @@ class LetterRepository {
           fontSize,
           pageCnt,
           info.recipient,
-          info.recipient_phone,
+          info.recipientPhone,
           info.sender,
-          info.sender_phone,
-          info.reservation_status,
-          info.reservation_dt,
+          info.senderPhone,
+          info.reservationStatus,
+          info.reservationDt,
         ]);
 
         const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
@@ -104,18 +104,7 @@ class LetterRepository {
         const uptLetterInfo = `UPDATE tb_letter_info 
         SET font_no = ?, font_size = ?, page_cnt = ?, recipient = ?, recipient_phone = ?, sender = ?, sender_phone = ?, reservation_status = ?, reservation_dt = ? 
         WHERE letter_no = ?;`;
-        await connection.query(uptLetterInfo, [
-          fontNo,
-          fontSize,
-          pageCnt,
-          info.recipient,
-          info.recipient_phone,
-          info.sender,
-          info.sender_phone,
-          info.reservation_status,
-          info.reservation_dt,
-          letterNo,
-        ]);
+        await connection.query(uptLetterInfo, [fontNo, fontSize, pageCnt, info.recipient, info.recipientPhone, info.sender, info.senderPhone, info.reservationStatus, info.reservationDt, letterNo]);
 
         const uptLetterContent = `UPDATE tb_letter_contents 
           SET status = 1
@@ -171,11 +160,11 @@ class LetterRepository {
           fontSize,
           pageCnt,
           info.recipient,
-          info.recipient_phone,
+          info.recipientPhone,
           info.sender,
-          info.sender_phone,
-          info.reservation_status,
-          info.reservation_dt,
+          info.senderPhone,
+          info.reservationStatus,
+          info.reservationDt,
         ]);
 
         const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
@@ -221,18 +210,7 @@ class LetterRepository {
         const uptLetterInfo = `UPDATE tb_letter_info 
           SET font_no = ?, font_size = ?, page_cnt = ?, recipient = ?, recipient_phone = ?, sender = ?, sender_phone = ?, reservation_status = ?, reservation_dt = ? 
           WHERE letter_no = ?;`;
-        await connection.query(uptLetterInfo, [
-          fontNo,
-          fontSize,
-          pageCnt,
-          info.recipient,
-          info.recipient_phone,
-          info.sender,
-          info.sender_phone,
-          info.reservation_status,
-          info.reservation_dt,
-          letterNo,
-        ]);
+        await connection.query(uptLetterInfo, [fontNo, fontSize, pageCnt, info.recipient, info.recipientPhone, info.sender, info.senderPhone, info.reservationStatus, info.reservationDt, letterNo]);
 
         // 기존의 임시 편지 내용 삭제
         const uptLetterContent = `UPDATE tb_letter_contents

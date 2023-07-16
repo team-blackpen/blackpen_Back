@@ -333,7 +333,7 @@ class LetterRepository {
   };
 
   // 편지 조회
-  getLetter = async (userNo, letterNo, hashLetter) => {
+  getLetter = async (userNo, letterNo, hashLetter, readDt) => {
     try {
       let where = "";
       let params = [];
@@ -364,6 +364,16 @@ class LetterRepository {
 
             letter[i].img = letterImg;
           }
+        }
+
+        // 조회 할 편지가 있으면 조회 로그 생성
+        if (letter.length > 0) {
+          let userLog = userNo ? userNo : 0; // 받은 유저가 읽으면 해당 유저 정보, 게스트가 읽으면 0
+
+          const insLog = `INSERT INTO tb_letter_read_log (letter_no, user_no, post_no, recipient_user_no, read_dt)
+            VALUES (?, ?, ?, ?, ?);`;
+
+          await connection.query(insLog, [letter[0].letter_no, letter[0].user_no, letter[0].post_no, userLog, readDt]);
         }
 
         return letter[0];

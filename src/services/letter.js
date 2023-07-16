@@ -83,7 +83,8 @@ class LetterService {
 
   getLetter = async (userNo, letterNo, hashLetter) => {
     try {
-      const getLetter = await this.letterRepository.getLetter(userNo, letterNo, hashLetter);
+      const now = dayjs().format("YYYY-MM-DD hh:mm:ss");
+      const getLetter = await this.letterRepository.getLetter(userNo, letterNo, hashLetter, now);
       return getLetter;
     } catch (err) {
       throw new ErrorCustom(400, "편지 조회 실패");

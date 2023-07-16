@@ -2,6 +2,8 @@ const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
 const ErrorCustom = require("../middlewares/errorCustom");
+require("dotenv").config();
+let hashKey = process.env.HASH_KEY;
 
 class LetterRepository {
   getTmpLetter = async (userNo, postNo, letterNo) => {
@@ -151,10 +153,15 @@ class LetterRepository {
 
         const insLetter = `INSERT INTO tb_letter (user_no, post_no, status, stage, reg_dt) VALUES (?, ?, 1, ?, ?);`;
         const [letter] = await connection.query(insLetter, [userNo, postNo, stage, regDt]);
-        const letterNo = letter.insertId;
+        let letterNo = letter.insertId;
 
-        const insLetterInfo = `INSERT INTO tb_letter_info 
-        (letter_no, user_no, post_no, font_no, font_size, page_cnt, recipient, recipient_phone, sender, sender_phone, reservation_status, reservation_dt) 
+        const uptLetter = `UPDATE tb_letter
+          SET hash_no = HEX(AES_ENCRYPT(?, ?)) 
+          WHERE letter_no = ?;`;
+        await connection.query(uptLetter, [letterNo.toString(), hashKey, letterNo]);
+
+        const insLetterInfo = `INSERT INTO tb_letter_info
+        (letter_no, user_no, post_no, font_no, font_size, page_cnt, recipient, recipient_phone, sender, sender_phone, reservation_status, reservation_dt)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
         await connection.query(insLetterInfo, [
           letterNo,
@@ -171,12 +178,12 @@ class LetterRepository {
           info.reservation_dt,
         ]);
 
-        const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt) 
+        const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
             VALUES (?, ?, ?, ?, ?, 0, ?);`;
         await connection.query(insLetterContent, [letterNo, userNo, postNo, contents, 1, regDt]);
 
         for (let i = 0; i < img.length; i++) {
-          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, view_seq, reg_dt) 
+          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, view_seq, reg_dt)
               VALUES (?, ?, ?, ?, ?, ?);`;
           await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, regDt]);
         }
@@ -192,7 +199,7 @@ class LetterRepository {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!");
+      console.log("DB ERROR!", err);
       return err;
     }
   };
@@ -206,9 +213,11 @@ class LetterRepository {
       try {
         await connection.beginTransaction(); // 트랜잭션 적용 시작
 
-        const uptLetter = `UPDATE tb_letter SET status = 1, stage = ?, upt_dt = ? WHERE letter_no = ?;`;
-        await connection.query(uptLetter, [stage, uptDt, letterNo]);
+        // 편지 상태 수정
+        const uptLetter = `UPDATE tb_letter SET status = 1, stage = ?, upt_dt = ?, hash_no = HEX(AES_ENCRYPT(?, ?))  WHERE letter_no = ?;`;
+        await connection.query(uptLetter, [stage, uptDt, letterNo.toString(), hashKey, letterNo]);
 
+        // 편지 정보 수정
         const uptLetterInfo = `UPDATE tb_letter_info 
           SET font_no = ?, font_size = ?, page_cnt = ?, recipient = ?, recipient_phone = ?, sender = ?, sender_phone = ?, reservation_status = ?, reservation_dt = ? 
           WHERE letter_no = ?;`;
@@ -225,17 +234,20 @@ class LetterRepository {
           letterNo,
         ]);
 
-        const uptLetterContent = `UPDATE tb_letter_contents 
+        // 기존의 임시 편지 내용 삭제
+        const uptLetterContent = `UPDATE tb_letter_contents
           SET status = 1
           WHERE letter_no = ?;`;
         await connection.query(uptLetterContent, [letterNo]);
 
-        const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt) 
+        // 편지 내용 생성
+        const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
               VALUES (?, ?, ?, ?, ?, 0, ?);`;
         await connection.query(insLetterContent, [letterNo, userNo, postNo, contents, 1, uptDt]);
 
+        // 편지 이미지화 생성
         for (let i = 0; i < img.length; i++) {
-          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, view_seq, reg_dt) 
+          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, view_seq, reg_dt)
               VALUES (?, ?, ?, ?, ?, ?);`;
           await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, uptDt]);
         }
@@ -251,7 +263,7 @@ class LetterRepository {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!");
+      console.log("DB ERROR!", err);
       return err;
     }
   };
@@ -359,7 +371,7 @@ class LetterRepository {
 
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT L.letter_no, L.user_no, L.post_no, L.recipient_user_no, Li.recipient, Li.sender, Lc.letter_contents_no, Lc.letter_contents 
+        const query = `SELECT L.letter_no, L.user_no, L.post_no, L.recipient_user_no, Li.recipient, Li.sender, Lc.letter_contents_no, Lc.letter_contents
           FROM tb_letter L 
           JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
           JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 0

@@ -9,7 +9,6 @@ class LetterController {
       const userNo = user.user_no;
 
       const letter = req.body;
-      console.log("🚀 ~ file: letter.js:12 ~ LetterController ~ creatLetter= ~ letter:", letter);
 
       const letterNo = await this.letterService.creatLetter(userNo, letter);
 

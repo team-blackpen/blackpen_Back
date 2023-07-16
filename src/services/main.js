@@ -13,6 +13,15 @@ class MainService {
       throw new ErrorCustom(400, "메인 편지함 조회 실패");
     }
   };
+
+  getLetterTmpList = async (userNo) => {
+    try {
+      const getLetterTmpList = await this.mainRepository.getLetterTmpList(userNo);
+      return getLetterTmpList;
+    } catch (err) {
+      throw new ErrorCustom(400, "메인 임지저장 조회 실패");
+    }
+  };
 }
 
 module.exports = MainService;

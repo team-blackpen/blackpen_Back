@@ -119,7 +119,8 @@ class PostListRepository {
       try {
         const query = `SELECT user_no, post_no
         FROM tb_post_wish
-        WHERE user_no = ? AND status = 1;`;
+        WHERE user_no = ? AND status = 1
+        ORDER BY post_no;`;
 
         let [results] = await connection.query(query, userNo);
 

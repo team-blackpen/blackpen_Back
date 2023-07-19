@@ -135,6 +135,58 @@ class PostListRepository {
       return err;
     }
   };
+
+  insPostWish = async (userNo, postNo, now) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT post_wish_no, user_no, post_no, status
+        FROM tb_post_wish
+        WHERE user_no = ? AND post_no = ?;`;
+
+        let [results] = await connection.query(query, [userNo, postNo]);
+        let insPostWish = {};
+
+        if (results.length == 0) {
+          // 데이터 없으면 처음 등록이니까 바로 생성
+          const insquery = `INSERT INTO tb_post_wish (user_no, post_no, status, reg_dt) VALUES (?, ?, 1, ?);`;
+
+          await connection.query(insquery, [userNo, postNo, now]);
+          insPostWish.msg = "편지지 찜목록 등록";
+        } else {
+          // 데이터가 있다면 등록된적은 있으니까
+          results = results[0];
+          let uptquery = `UPDATE tb_post_wish SET status = ?, upt_dt = ? WHERE post_wish_no = ?;`;
+          let status;
+
+          if (results.status == 1) {
+            // status 1 이면 등록된거 취소
+            status = 0;
+            await connection.query(uptquery, [status, now, results.post_wish_no]);
+            insPostWish.msg = "편지지 찜목록 삭제";
+          } else {
+            // status 0 이면 취소한거니까 재등록
+            status = 1;
+            await connection.query(uptquery, [status, now, results.post_wish_no]);
+            insPostWish.msg = "편지지 찜목록 등록";
+          }
+        }
+
+        connection.release();
+
+        insPostWish.userNo = userNo;
+        insPostWish.postNo = postNo;
+
+        return insPostWish;
+      } catch (err) {
+        console.log("Query Error!", err);
+        return err;
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      return err;
+    }
+  };
 }
 
 module.exports = PostListRepository;

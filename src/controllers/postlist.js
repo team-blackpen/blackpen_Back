@@ -57,6 +57,23 @@ class PostListController {
       next(err);
     }
   };
+
+  // 찜목록 등록 및 취소
+  insPostWish = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const { postNo } = req.body;
+
+      const insPostWish = await this.postListService.insPostWish(userNo, postNo);
+
+      const data = { userNo: insPostWish.userNo, postNo: insPostWish.postNo };
+
+      res.status(200).json({ result: 0, msg: insPostWish.msg, data });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 module.exports = PostListController;

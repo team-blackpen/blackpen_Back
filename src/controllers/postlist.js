@@ -18,7 +18,6 @@ class PostListController {
 
   getAllPost = async (req, res, next) => {
     try {
-      console.log("🚀 ~ file: postlist.js:25 ~ PostListController ~ getAllPost= ~ user:", user);
       const allPost = await this.postListService.getAllPost();
 
       const data = { postList: allPost };

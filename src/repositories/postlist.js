@@ -188,6 +188,47 @@ class PostListRepository {
       return err;
     }
   };
+
+  allPostWishList = async (userNo, cateNo) => {
+    try {
+      let addCateNo = "";
+      let params = [userNo, cateNo];
+      if (cateNo != 0) {
+        addCateNo = `AND Pc.post_cate_no = ? `;
+        params.push(cateNo);
+      }
+
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT P.post_no, P.post_title, P.post_description, 
+        Pi.post_img_no, Pi.img_url,
+        Pc.post_cate_no, Pc.cate_title, 
+        A.artist_no, A.artist_name,
+        IF(Pw.upt_dt, Pw.upt_dt, Pw.reg_dt) AS upt_dt
+        FROM tb_post P
+        JOIN tb_post_img Pi ON Pi.post_no = P.post_no AND Pi.view_seq = 0
+        JOIN tb_post_cate_rel Pcr ON Pcr.post_no = P.post_no
+        JOIN tb_post_cate Pc ON Pc.post_cate_no = Pcr.post_cate_no AND Pc.status = 0 
+        JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no
+        JOIN tb_artist A ON A.artist_no = Ar.artist_no 
+        JOIN tb_post_wish Pw ON Pw.post_no = P.post_no AND user_no = ?
+        WHERE P.status = 0 ${addCateNo}
+        ORDER BY upt_dt DESC;`;
+
+        let [results] = await connection.query(query, params);
+
+        connection.release();
+
+        return results;
+      } catch (err) {
+        console.log("Query Error!", err);
+        return err;
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      return err;
+    }
+  };
 }
 
 module.exports = PostListRepository;

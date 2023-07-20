@@ -10,5 +10,6 @@ router.get("/", postListController.getAllPost);
 router.get("/wish", login.isLogin, postListController.getPostWish);
 router.get("/category/:post_cate_no", postListController.getPostCategory);
 router.post("/wish", login.isLogin, postListController.insPostWish);
+router.get("/wish/list/:post_cate_no", login.isLogin, postListController.getPostWishList);
 
 module.exports = router;

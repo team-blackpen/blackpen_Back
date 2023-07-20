@@ -66,6 +66,20 @@ class PostListService {
 
     return insPostWish;
   };
+
+  getPostWishList = async (userNo, cateNo) => {
+    const posts = await this.postListRepository.allPostWishList(userNo, cateNo);
+
+    if (posts.length > 0) {
+      for (let i in posts) {
+        const hashs = await this.postListRepository.allHash(posts[i].post_no);
+
+        hashs.length > 0 ? (posts[i].hashtag = hashs) : (posts[i].hashtag = []);
+      }
+    }
+
+    return posts;
+  };
 }
 
 module.exports = PostListService;

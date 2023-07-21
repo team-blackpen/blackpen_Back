@@ -113,6 +113,22 @@ class LetterController {
       next(err);
     }
   };
+
+  // 임시저장 편지 불러오기
+  getLetterTmp = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const letterNo = req.params.letter_no;
+
+      const letterTmp = await this.letterService.getLetterTmp(userNo, letterNo);
+
+      res.status(200).json({ result: 0, msg: "임시저장 편지 조회 성공", data: { letterTmp } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

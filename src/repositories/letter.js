@@ -388,6 +388,34 @@ class LetterRepository {
       throw new ErrorCustom(500, "DB ERROR!");
     }
   };
+
+  // 임시편지 불러오기
+  getLetterTmp = async (userNo, letterNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT L.letter_no, L.user_no, L.post_no, L.status, L.stage, 
+        Lc.letter_contents_no, Lc.letter_contents, 
+        Li.font_no, Li.recipient, Li.recipient_phone, Li.sender, Li.sender_phone, Li.reservation_status, Li.reservation_dt
+        FROM tb_letter L 
+        JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
+        JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 0
+        WHERE L.letter_no = ? AND L.user_no = ? AND L.status = 0;`;
+
+        let [letterTmp] = await connection.query(query, [letterNo, userNo]);
+
+        return letterTmp[0];
+      } catch (err) {
+        console.log("Query Error!", err);
+        throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      throw new ErrorCustom(500, "DB ERROR!");
+    }
+  };
 }
 
 module.exports = LetterRepository;

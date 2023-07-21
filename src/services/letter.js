@@ -90,6 +90,15 @@ class LetterService {
       throw new ErrorCustom(400, "편지 조회 실패");
     }
   };
+
+  getLetterTmp = async (userNo, letterNo) => {
+    try {
+      const letterTmp = await this.letterRepository.getLetterTmp(userNo, letterNo);
+      return letterTmp;
+    } catch (err) {
+      throw new ErrorCustom(400, "임시저장 편지 조회 실패");
+    }
+  };
 }
 
 module.exports = LetterService;

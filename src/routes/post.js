@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const login = require("../middlewares/isLogin");
 
 const PostController = require("../controllers/post");
 const postController = new PostController();
 
-router.get("/detail/:post_no", postController.getPostDetail);
+router.get("/detail/:post_no", login.loginCheck, postController.getPostDetail);
 
 module.exports = router;

@@ -28,19 +28,16 @@ class PostRepository {
         WHERE P.post_no = ? AND P.status = 0;`;
 
         let [results] = await connection.query(query, params);
-        console.log("🚀 ~ file: post.js:31 ~ PostRepository ~ postDetail= ~ results:", results);
-
-        connection.release();
 
         return results[0];
       } catch (err) {
-        console.log("🚀 ~ file: post.js:36 ~ PostRepository ~ postDetail= ~ err:", err);
-        // console.log("Query Error!");
+        console.log("Query Error!", err);
         throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("🚀 ~ file: post.js:41 ~ PostRepository ~ postDetail= ~ err:", err);
-      // console.log("DB ERROR!");
+      console.log("DB ERROR!", err);
       throw new ErrorCustom(500, "DB ERROR!");
     }
   };
@@ -80,17 +77,15 @@ class PostRepository {
       try {
         let [results] = await connection.query(query, [postNo]);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("🚀 ~ file: post.js:141 ~ PostRepository ~ postEtc= ~ err:", err);
-        // console.log("Query Error!");
+        console.log("Query Error!", err);
         throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("🚀 ~ file: post.js:147 ~ PostRepository ~ postEtc= ~ err:", err);
-      // console.log("DB ERROR!");
+      console.log("DB ERROR!", err);
       throw new ErrorCustom(500, "DB ERROR!");
     }
   };

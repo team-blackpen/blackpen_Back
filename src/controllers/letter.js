@@ -129,6 +129,18 @@ class LetterController {
       next(err);
     }
   };
+
+  // 폰트 조회
+  getFont = async (req, res, next) => {
+    try {
+      const font = await this.letterService.getFont();
+
+      res.status(200).json({ result: 0, msg: "폰트 조회 성공", data: { font } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

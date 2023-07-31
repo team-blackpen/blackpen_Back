@@ -99,6 +99,15 @@ class LetterService {
       throw new ErrorCustom(400, "임시저장 편지 조회 실패");
     }
   };
+
+  getFont = async () => {
+    try {
+      const getFont = await this.letterRepository.getFont();
+      return getFont;
+    } catch (err) {
+      throw new ErrorCustom(400, "폰트 조회 실패");
+    }
+  };
 }
 
 module.exports = LetterService;

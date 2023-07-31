@@ -416,6 +416,29 @@ class LetterRepository {
       throw new ErrorCustom(500, "DB ERROR!");
     }
   };
+
+  // 폰트 불러오기
+  getFont = async () => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT font_no, font_title, font_url 
+          FROM tb_font ORDER BY view_seq;`;
+
+        let [font] = await connection.query(query);
+
+        return font;
+      } catch (err) {
+        console.log("Query Error!", err);
+        throw new ErrorCustom(500, "Query Error!");
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      throw new ErrorCustom(500, "DB ERROR!");
+    }
+  };
 }
 
 module.exports = LetterRepository;

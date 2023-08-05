@@ -82,7 +82,7 @@ class LetterRepository {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!");
+      console.log("DB ERROR!", err);
       return err;
     }
   };
@@ -99,7 +99,7 @@ class LetterRepository {
         const uptLetter = `UPDATE tb_letter 
         SET stage = ?, upt_dt = ? 
         WHERE letter_no = ?;`;
-        await connection.query(uptLetter, [stage, uptDt, letterNo]);
+        const letter = await connection.query(uptLetter, [stage, uptDt, letterNo]);
 
         const uptLetterInfo = `UPDATE tb_letter_info 
         SET font_no = ?, font_size = ?, page_cnt = ?, recipient = ?, recipient_phone = ?, sender = ?, sender_phone = ?, reservation_status = ?, reservation_dt = ? 
@@ -117,7 +117,7 @@ class LetterRepository {
 
         await connection.commit(); // 커밋
 
-        return;
+        return letter;
       } catch (err) {
         console.log("Query Error!", err);
         await connection.rollback(); // 롤백
@@ -126,7 +126,7 @@ class LetterRepository {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!");
+      console.log("DB ERROR!", err);
       return err;
     }
   };
@@ -172,9 +172,9 @@ class LetterRepository {
         await connection.query(insLetterContent, [letterNo, userNo, postNo, contents, 1, regDt]);
 
         for (let i = 0; i < img.length; i++) {
-          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, view_seq, reg_dt)
+          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
               VALUES (?, ?, ?, ?, ?, ?);`;
-          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, regDt]);
+          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], 0, i, regDt]);
         }
 
         await connection.commit(); // 커밋
@@ -204,7 +204,7 @@ class LetterRepository {
 
         // 편지 상태 수정
         const uptLetter = `UPDATE tb_letter SET status = 1, stage = ?, upt_dt = ?, hash_no = HEX(AES_ENCRYPT(?, ?))  WHERE letter_no = ?;`;
-        await connection.query(uptLetter, [stage, uptDt, letterNo.toString(), hashKey, letterNo]);
+        const letter = await connection.query(uptLetter, [stage, uptDt, letterNo.toString(), hashKey, letterNo]);
 
         // 편지 정보 수정
         const uptLetterInfo = `UPDATE tb_letter_info 
@@ -225,14 +225,46 @@ class LetterRepository {
 
         // 편지 이미지화 생성
         for (let i = 0; i < img.length; i++) {
-          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, view_seq, reg_dt)
+          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
               VALUES (?, ?, ?, ?, ?, ?);`;
-          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, uptDt]);
+          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], 0, i, uptDt]);
         }
 
         await connection.commit(); // 커밋
 
-        return;
+        return letter;
+      } catch (err) {
+        console.log("Query Error!", err);
+        await connection.rollback(); // 롤백
+        return err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      return err;
+    }
+  };
+
+  // 작성완료 편지 임시편지로 되돌리기
+  rollBackLetter = async (letterNo, uptDt) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        await connection.beginTransaction(); // 트랜잭션 적용 시작
+
+        // 편지 상태 수정
+        const uptLetter = `UPDATE tb_letter SET status = 0, upt_dt = ?, hash_no = ""  WHERE letter_no = ?;`;
+        const letter = await connection.query(uptLetter, [uptDt, letterNo]);
+
+        const uptLetterImg = `UPDATE tb_letter_img 
+          SET status = 1
+          WHERE letter_no = ?;`;
+        await connection.query(uptLetterImg, [letterNo]);
+
+        await connection.commit(); // 커밋
+
+        return letter;
       } catch (err) {
         console.log("Query Error!", err);
         await connection.rollback(); // 롤백
@@ -260,7 +292,7 @@ class LetterRepository {
 
         if (letterList.length > 0) {
           for (let i in letterList) {
-            const queryimg = `SELECT letter_img_no, letter_img_url FROM tb_letter_img WHERE letter_no = ?`;
+            const queryimg = `SELECT letter_img_no, letter_img_url FROM tb_letter_img WHERE letter_no = ? AND status = 0`;
             let [letterImg] = await connection.query(queryimg, letterList[i].letter_no);
 
             letterList[i].img = letterImg;
@@ -359,7 +391,7 @@ class LetterRepository {
 
         if (letter.length > 0) {
           for (let i in letter) {
-            const queryimg = `SELECT letter_img_no, letter_img_url FROM tb_letter_img WHERE letter_no = ?;`;
+            const queryimg = `SELECT letter_img_no, letter_img_url FROM tb_letter_img WHERE letter_no = ? AND status = 0;`;
             let [letterImg] = await connection.query(queryimg, letter[i].letter_no);
 
             letter[i].img = letterImg;

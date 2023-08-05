@@ -1,4 +1,12 @@
 const LetterService = require("../services/letter");
+const ErrorCustom = require("../middlewares/errorCustom");
+const dayjs = require("dayjs");
+const timezone = require("dayjs/plugin/timezone");
+const utc = require("dayjs/plugin/utc");
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Seoul");
 
 class LetterController {
   letterService = new LetterService();
@@ -10,11 +18,20 @@ class LetterController {
 
       const letter = req.body;
 
+      const now = dayjs();
+      if (letter.info.reservationStatus == 1) {
+        const subtractedTime = dayjs(letter.info.reservationDt).subtract(15, "minute");
+
+        if (subtractedTime.isBefore(now)) {
+          console.log(now.format("YYYY-MM-DD hh:mm:ss"), subtractedTime.format("YYYY-MM-DD hh:mm:ss"));
+          throw new ErrorCustom(400, "예약 발송은 현재 시간보다 15분 뒤부터 가능합니다.");
+        }
+      }
+
       const letterNo = await this.letterService.creatLetter(userNo, letter);
 
       res.status(200).json({ result: 0, msg: "편지 작성 성공", data: { letterNo: letterNo } });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   };

@@ -173,8 +173,8 @@ class LetterRepository {
 
         for (let i = 0; i < img.length; i++) {
           const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
-              VALUES (?, ?, ?, ?, ?, ?);`;
-          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], 0, i, regDt]);
+              VALUES (?, ?, ?, ?, 0, ?, ?);`;
+          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, regDt]);
         }
 
         await connection.commit(); // 커밋
@@ -226,8 +226,8 @@ class LetterRepository {
         // 편지 이미지화 생성
         for (let i = 0; i < img.length; i++) {
           const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
-              VALUES (?, ?, ?, ?, ?, ?);`;
-          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], 0, i, uptDt]);
+              VALUES (?, ?, ?, ?, 0, ?, ?);`;
+          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, uptDt]);
         }
 
         await connection.commit(); // 커밋

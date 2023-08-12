@@ -7,7 +7,7 @@ module.exports = {
       exec_mode: "cluster",
 
       output: "~/logs/pm2/console.log", // 로그 출력 경로 재설정
-      error: "~/logs/pm2/onsoleError.log", // 에러 로그 출력 경로 재설정
+      error: "~/logs/pm2/consoleError.log", // 에러 로그 출력 경로 재설정
     },
   ],
 };

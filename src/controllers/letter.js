@@ -19,13 +19,12 @@ class LetterController {
       const letter = req.body;
 
       const now = dayjs();
-      if (letter.info.reservationStatus == 1) {
+      if (letter.status == 1 && letter.info.reservationStatus == 1) {
         const subtractedTime = dayjs(letter.info.reservationDt).subtract(15, "minute");
 
-		  console.log("now : ", now.format("YYYY-MM-DD HH:mm:ss"))
-		  console.log("subtractedTime : ", subtractedTime.format("YYYY-MM-DD HH:mm:ss"))
+        console.log("now : ", now.format("YYYY-MM-DD HH:mm:ss"));
+        console.log("subtractedTime : ", subtractedTime.format("YYYY-MM-DD HH:mm:ss"));
         if (subtractedTime.isBefore(now)) {
-          console.log(now.format("YYYY-MM-DD hh:mm:ss"), subtractedTime.format("YYYY-MM-DD hh:mm:ss"));
           throw new ErrorCustom(400, "예약 발송은 현재 시간보다 15분 뒤부터 가능합니다.");
         }
       }

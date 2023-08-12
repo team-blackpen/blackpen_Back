@@ -1,3 +1,4 @@
+require("dotenv").config();
 const passport = require("passport");
 const KakaoStrategy = require("passport-kakao").Strategy;
 const mysql = require("mysql2/promise");

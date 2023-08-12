@@ -51,6 +51,7 @@ class LetterService {
         if (letterNo == 0) {
           // 작성완료이면서 편지번호 없음
           const creatLetter = await this.letterRepository.insLetter(userNo, postNo, stage, contents, fontNo, info, img, now); // 임시편지 없으면 바로 편지발송 준비
+			console.log(creatLetter)
           if (creatLetter.errno) throw new ErrorCustom(500, "디비 에러");
           // 에러 나면 디비단은 로그만 남기고 에러는 서비스단에서 넘기는걸로 쿼리에러는 잡는데 디비에러는 못잡는중
 
@@ -75,7 +76,9 @@ class LetterService {
           };
 
           const resultToken = await aligoapi.token(objToken, AuthData);
+			console.log("🚀 ~ file: letter.js:78 ~ LetterService ~ creatLetter= ~ resultToken:", resultToken);
           if (resultToken.code != 0) {
+			  console.log(resultToken)
             await this.letterRepository.rollBackLetter(letterNo, stage, now); // 알림톡 실패 시 임시저장으로 다시변경
             throw new ErrorCustom(400, "알림톡 발송에 실패했습니다.");
           }
@@ -126,9 +129,11 @@ class LetterService {
           }
 
           const aligoResult = await aligoapi.alimtalkSend(obj, AuthData);
+			console.log("🚀 ~ file: letter.js:129 ~ LetterService ~ creatLetter= ~ aligoResult:", aligoResult);
 
           // 발송 실패 시
           if (aligoResult.code != 0) {
+			  console.log(resultToken)
             const rollBackLetter = await this.letterRepository.rollBackLetter(letterNo, now); // 알림톡 실패 시 임시저장으로 다시변경
             throw new ErrorCustom(400, "알림톡 발송에 실패했습니다.");
           }

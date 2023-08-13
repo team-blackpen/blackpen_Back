@@ -131,7 +131,8 @@ class LetterRepository {
     }
   };
 
-  insLetter = async (userNo, postNo, stage, contents, fontNo, info, img, regDt) => {
+  // 편지 작성(임시저장, 작성완료)
+  insLetter = async (userNo, postNo, status, stage, contents, fontNo, info, img, regDt) => {
     try {
       //   const fontNo = font.font_no;
       const fontSize = 10;
@@ -140,15 +141,22 @@ class LetterRepository {
       try {
         await connection.beginTransaction(); // 트랜잭션 적용 시작
 
-        const insLetter = `INSERT INTO tb_letter (user_no, post_no, status, stage, reg_dt) VALUES (?, ?, 1, ?, ?);`;
-        const [letter] = await connection.query(insLetter, [userNo, postNo, stage, regDt]);
+        // 편지 새로 생성
+        const insLetter = `INSERT INTO tb_letter 
+          (user_no, post_no, status, stage, reg_dt) 
+          VALUES (?, ?, ?, ?, ?);`;
+        const [letter] = await connection.query(insLetter, [userNo, postNo, status, stage, regDt]);
         let letterNo = letter.insertId;
 
-        const uptLetter = `UPDATE tb_letter
-          SET hash_no = HEX(AES_ENCRYPT(?, ?)) 
-          WHERE letter_no = ?;`;
-        await connection.query(uptLetter, [letterNo.toString(), hashKey, letterNo]);
+        // 작성완료일때만 편지 암호화
+        if (status == 1) {
+          const uptLetter = `UPDATE tb_letter
+            SET hash_no = HEX(AES_ENCRYPT(?, ?)) 
+            WHERE letter_no = ?;`;
+          await connection.query(uptLetter, [letterNo.toString(), hashKey, letterNo]);
+        }
 
+        // 편지 정보 생성
         const insLetterInfo = `INSERT INTO tb_letter_info
         (letter_no, user_no, post_no, font_no, font_size, page_cnt, recipient, recipient_phone, sender, sender_phone, reservation_status, reservation_dt)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
@@ -167,14 +175,20 @@ class LetterRepository {
           info.reservationDt,
         ]);
 
-        const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
-            VALUES (?, ?, ?, ?, ?, 0, ?);`;
+        // 편지 내용 생성
+        const insLetterContent = `INSERT INTO tb_letter_contents 
+          (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
+          VALUES (?, ?, ?, ?, ?, 0, ?);`;
         await connection.query(insLetterContent, [letterNo, userNo, postNo, contents, 1, regDt]);
 
-        for (let i = 0; i < img.length; i++) {
-          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
+        // 편지 이미지 생성(임시저장 할때 이미지 없을 수 있음)
+        if (img.length > 0) {
+          for (let i = 0; i < img.length; i++) {
+            const insLetterContent = `INSERT INTO tb_letter_img 
+              (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
               VALUES (?, ?, ?, ?, 0, ?, ?);`;
-          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, regDt]);
+            await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, regDt]);
+          }
         }
 
         await connection.commit(); // 커밋
@@ -183,28 +197,36 @@ class LetterRepository {
       } catch (err) {
         console.log("Query Error!", err);
         await connection.rollback(); // 롤백
-        return err;
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!", err);
-      return err;
+      throw err;
     }
   };
 
-  uptLetter = async (letterNo, userNo, postNo, stage, contents, fontNo, info, img, uptDt) => {
+  uptLetter = async (letterNo, userNo, postNo, status, stage, contents, fontNo, info, img, uptDt) => {
     try {
       //   const fontNo = font.font_no;
       const fontSize = 10;
       const pageCnt = 1;
+      let addWhere = ``;
+      let addQurey = [status, stage, uptDt, letterNo];
+      if (status == 1) {
+        addWhere = `, hash_no = HEX(AES_ENCRYPT(?, ?)) `;
+        addQurey = [status, stage, uptDt, letterNo.toString(), hashKey, letterNo];
+      }
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         await connection.beginTransaction(); // 트랜잭션 적용 시작
 
         // 편지 상태 수정
-        const uptLetter = `UPDATE tb_letter SET status = 1, stage = ?, upt_dt = ?, hash_no = HEX(AES_ENCRYPT(?, ?))  WHERE letter_no = ?;`;
-        const letter = await connection.query(uptLetter, [stage, uptDt, letterNo.toString(), hashKey, letterNo]);
+        const uptLetter = `UPDATE tb_letter 
+          SET status = ?, stage = ?, upt_dt = ? ${addWhere}
+          WHERE letter_no = ?;`;
+        const letter = await connection.query(uptLetter, addQurey);
 
         // 편지 정보 수정
         const uptLetterInfo = `UPDATE tb_letter_info 
@@ -219,15 +241,25 @@ class LetterRepository {
         await connection.query(uptLetterContent, [letterNo]);
 
         // 편지 내용 생성
-        const insLetterContent = `INSERT INTO tb_letter_contents (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
-              VALUES (?, ?, ?, ?, ?, 0, ?);`;
+        const insLetterContent = `INSERT INTO tb_letter_contents 
+          (letter_no, user_no, post_no, letter_contents, page_no, status, reg_dt)
+          VALUES (?, ?, ?, ?, ?, 0, ?);`;
         await connection.query(insLetterContent, [letterNo, userNo, postNo, contents, 1, uptDt]);
 
-        // 편지 이미지화 생성
-        for (let i = 0; i < img.length; i++) {
-          const insLetterContent = `INSERT INTO tb_letter_img (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
+        if (img.length > 0) {
+          // 기존의 임시 편지 이미지 삭제
+          const uptLetterImg = `UPDATE tb_letter_img
+            SET status = 1
+            WHERE letter_no = ?;`;
+          await connection.query(uptLetterImg, [letterNo]);
+
+          // 편지 이미지화 생성
+          for (let i = 0; i < img.length; i++) {
+            const insLetterImg = `INSERT INTO tb_letter_img 
+              (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt)
               VALUES (?, ?, ?, ?, 0, ?, ?);`;
-          await connection.query(insLetterContent, [letterNo, userNo, postNo, img[i], i, uptDt]);
+            await connection.query(insLetterImg, [letterNo, userNo, postNo, img[i], i, uptDt]);
+          }
         }
 
         await connection.commit(); // 커밋
@@ -236,13 +268,13 @@ class LetterRepository {
       } catch (err) {
         console.log("Query Error!", err);
         await connection.rollback(); // 롤백
-        return err;
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!", err);
-      return err;
+      throw err;
     }
   };
 

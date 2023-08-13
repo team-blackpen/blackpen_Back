@@ -27,30 +27,31 @@ class LetterService {
 
       let letterNo = letter.letterNo;
       const postNo = letter.postNo;
+      const status = letter.status;
       const stage = letter.stage;
       const contents = letter.letterContents;
       const fontNo = letter.fontNo;
       const info = letter.info;
+      const img = letter.letterImg;
 
-      if (letter.status == 0) {
+      if (status == 0) {
         // 임시편지 저장?
         if (letterNo == 0) {
           // 임시저장이면서 편지 번호가 없음
-          const creatTmpLetter = await this.letterRepository.insTmpLetter(userNo, postNo, stage, contents, fontNo, info, now); // 임시편지 없으면 내용까지만 생성
+          const creatTmpLetter = await this.letterRepository.insLetter(userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 없으면 내용 생성 이미지는 있으면 생성
           if (creatTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
           letterNo = creatTmpLetter;
         } else {
           // 임시저장이면서 편지 번호가 있음
-          const udtTmpLetter = await this.letterRepository.uptTmpLetter(letterNo, userNo, postNo, stage, contents, fontNo, info, now); // 임시편지 있으면 내용까지만 수정
+          const udtTmpLetter = await this.letterRepository.uptLetter(letterNo, userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 있으면 내용 수정 이미지는 있으면 수정
           if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
         }
       } else {
         // 편지 작성완료
-        const img = letter.letterImg;
         let aligoStatus = 0;
         if (letterNo == 0) {
           // 작성완료이면서 편지번호 없음
-          const creatLetter = await this.letterRepository.insLetter(userNo, postNo, stage, contents, fontNo, info, img, now); // 임시편지 없으면 바로 편지발송 준비
+          const creatLetter = await this.letterRepository.insLetter(userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 없으면 바로 편지발송 준비
           console.log(creatLetter);
           if (creatLetter.errno) throw new ErrorCustom(500, "디비 에러");
           // 에러 나면 디비단은 로그만 남기고 에러는 서비스단에서 넘기는걸로 쿼리에러는 잡는데 디비에러는 못잡는중
@@ -59,13 +60,13 @@ class LetterService {
           aligoStatus = 1;
         } else {
           // 작성완료이면서 편지번호 있음
-          const udtTmpLetter = await this.letterRepository.uptLetter(letterNo, userNo, postNo, stage, contents, fontNo, info, img, now); // 임시편지 있으면 완료로 바꾸고 편지 발송 준비
+          const udtTmpLetter = await this.letterRepository.uptLetter(letterNo, userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 있으면 완료로 바꾸고 편지 발송 준비
           if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
           aligoStatus = 1;
         }
 
         // 알림톡 발송
-        // aligoStatus = 1; // 임시
+        // aligoStatus = 0; // 임시
         if (aligoStatus == 1) {
           // 토큰 발급
           let objToken = {};

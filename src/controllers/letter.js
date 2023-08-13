@@ -18,6 +18,8 @@ class LetterController {
 
       const letter = req.body;
 
+      if (letter.status == 1 && letter.letterImg.length < 1) throw new ErrorCustom(400, "편지 이미지가 없습니다");
+
       const now = dayjs();
       if (letter.status == 1 && letter.info.reservationStatus == 1) {
         const subtractedTime = dayjs(letter.info.reservationDt).subtract(15, "minute");

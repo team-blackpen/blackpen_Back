@@ -8,23 +8,16 @@ const jwt = require("jsonwebtoken");
 // 카카오로그인
 const kakaoCallback = (req, res, next) => {
   try {
-    console.log(1111);
     passport.authenticate(
       "kakao",
       { failureRedirect: "/" }, // 실패하면 '/user/login''로 돌아감.
       async (err, user, info) => {
         if (err) return next(err);
-        console.log("user", user);
-        const { user_no, nickname } = user;
+        const { user_no, nickname, heart_temper } = user;
 
-        const accessToken = jwt.sign({ user_no: user_no, nickname: nickname }, process.env.JWT_KEY, { expiresIn: "3h" });
-        // const refreshToken = jwt.sign(
-        //   { user_no: user.user_no },
-        //   process.env.JWT_KEY,
-        //   { expiresIn: '5h' }
-        // );
+        const accessToken = jwt.sign({ user_no: user_no, nickname: nickname, heart_temper: heart_temper }, process.env.JWT_KEY, { expiresIn: "3h" });
 
-        result = { user_no, accessToken, nickname };
+        result = { user_no, accessToken, nickname, heart_temper };
         res.status(200).json({ result: 0, msg: "카카오 성공", data: result });
       }
     )(req, res, next);

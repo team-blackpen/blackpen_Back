@@ -26,6 +26,20 @@ class PostListController {
     } catch {}
   };
 
+  getPostWishCate = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const allPostWishCate = await this.postListService.getPostWishCate(userNo);
+
+      const data = { postWishList: allPostWishCate };
+
+      res.status(200).json({ result: 0, msg: "편지지 찜목록 카테고리 조회", data });
+    } catch (err) {
+      next(err);
+    }
+  };
+
   getPostWish = async (req, res, next) => {
     try {
       const user = res.locals.user;

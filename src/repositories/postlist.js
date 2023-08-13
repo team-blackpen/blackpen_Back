@@ -3,29 +3,36 @@ const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
 
 class PostListRepository {
-  allCategory = async () => {
+  allCategory = async (userNo) => {
     try {
+      let addJoin = ``;
+      let addQurey = [];
+      if (userNo) {
+        addJoin = `JOIN tb_post_wish Pw ON Pw.post_no = Pcr.post_no AND user_no = ?`;
+        addQurey.push(userNo);
+      }
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT C.post_cate_no, C.cate_title, C.view_seq 
-        FROM tb_post_cate C
-	    	JOIN tb_post_cate_rel Pcr ON Pcr.post_cate_no = C.post_cate_no
-        WHERE C.status = 0
-        GROUP BY Pcr.post_cate_no
-        ORDER BY C.view_seq;`;
+          FROM tb_post_cate C
+          JOIN tb_post_cate_rel Pcr ON Pcr.post_cate_no = C.post_cate_no
+          ${addJoin}
+          WHERE C.status = 0
+          GROUP BY Pcr.post_cate_no
+          ORDER BY C.view_seq;`;
 
-        let [results] = await connection.query(query);
+        let [results] = await connection.query(query, addQurey);
 
         connection.release();
 
         return results;
       } catch (err) {
         console.log("Query Error!");
-        return err;
+        throw err;
       }
     } catch (err) {
       console.log("DB ERROR!");
-      return err;
+      throw err;
     }
   };
 

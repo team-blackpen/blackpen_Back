@@ -80,7 +80,7 @@ class LetterService {
           console.log("🚀 ~ file: letter.js:78 ~ LetterService ~ creatLetter= ~ resultToken:", resultToken);
           if (resultToken.code != 0) {
             console.log(resultToken);
-            await this.letterRepository.rollBackLetter(letterNo, stage, now); // 알림톡 실패 시 임시저장으로 다시변경
+            await this.letterRepository.rollBackLetter(letterNo, now); // 알림톡 실패 시 임시저장으로 다시변경
             throw new ErrorCustom(400, "알림톡 발송에 실패했습니다.");
           }
           AuthData.token = resultToken.token;

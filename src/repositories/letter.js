@@ -289,10 +289,10 @@ class LetterRepository {
         const uptLetter = `UPDATE tb_letter SET status = 0, upt_dt = ?, hash_no = ""  WHERE letter_no = ?;`;
         const letter = await connection.query(uptLetter, [uptDt, letterNo]);
 
-        const uptLetterImg = `UPDATE tb_letter_img 
-          SET status = 1
-          WHERE letter_no = ?;`;
-        await connection.query(uptLetterImg, [letterNo]);
+        // const uptLetterImg = `UPDATE tb_letter_img
+        //   SET status = 1
+        //   WHERE letter_no = ?;`;
+        // await connection.query(uptLetterImg, [letterNo]);
 
         await connection.commit(); // 커밋
 
@@ -417,7 +417,7 @@ class LetterRepository {
           FROM tb_letter L 
           JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
           JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 0
-          WHERE ${where} AND L.status = 2;`;
+          WHERE ${where} AND L.status = 1;`;
 
         let [letter] = await connection.query(query, params);
 
@@ -467,6 +467,15 @@ class LetterRepository {
         WHERE L.letter_no = ? AND L.user_no = ? AND L.status = 0;`;
 
         let [letterTmp] = await connection.query(query, [letterNo, userNo]);
+
+        if (letterTmp.length > 0) {
+          for (let i in letterTmp) {
+            const queryimg = `SELECT letter_img_no, letter_img_url FROM tb_letter_img WHERE letter_no = ? AND status = 0;`;
+            let [letterTmpImg] = await connection.query(queryimg, letterTmp[i].letter_no);
+
+            letterTmp[i].img = letterTmpImg;
+          }
+        }
 
         return letterTmp[0];
       } catch (err) {

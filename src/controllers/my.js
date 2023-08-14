@@ -46,6 +46,19 @@ class LetterController {
       next(err);
     }
   };
+
+  getHeartTemper = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+
+      const heartTemper = await this.myService.getHeartTemper(userNo);
+
+      res.status(200).json({ result: 0, msg: "내 마음온도 조회 성공", data: { heartTemper } });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

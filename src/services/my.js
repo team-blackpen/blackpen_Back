@@ -21,6 +21,15 @@ class MainService {
       throw new ErrorCustom(400, "내 찜목록 갯수 조회 실패");
     }
   };
+
+  getHeartTemper = async (userNo) => {
+    try {
+      const getHeartTemper = await this.myRepository.getHeartTemper(userNo);
+      return getHeartTemper;
+    } catch (err) {
+      throw new ErrorCustom(400, "내 마음온도 조회 실패");
+    }
+  };
 }
 
 module.exports = MainService;

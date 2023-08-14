@@ -47,6 +47,28 @@ class MyRepository {
       throw new ErrorCustom(500, "DB ERROR!");
     }
   };
+
+  getHeartTemper = async (userNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT user_no, nickname, heart_temper FROM tb_user 
+        WHERE user_no = ?;`;
+
+        let [heartTemper] = await connection.query(query, userNo);
+
+        return heartTemper[0];
+      } catch (err) {
+        console.log("Query Error!", err);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!", err);
+      throw err;
+    }
+  };
 }
 
 module.exports = MyRepository;

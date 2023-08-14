@@ -1,6 +1,7 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
+const ErrorCustom = require("../middlewares/errorCustom");
 
 class PostListRepository {
   allCategory = async (userNo) => {
@@ -59,10 +60,12 @@ class PostListRepository {
     }
   };
 
+  // 편지지 전체 조회, 편지지 카테고리별 조회
   allPost = async (cateNo, limit, offset) => {
     try {
       let addLimit = "";
       limit ? (addLimit = `LIMIT ${limit} OFFSET ${offset};`) : (addLimit = "LIMIT 10;");
+      // limit이 있으면 카테고리별 조회 5개씩, 전체 조회는 10개만 조회
 
       const connection = await pool.getConnection(async (corn) => corn);
       try {
@@ -82,16 +85,34 @@ class PostListRepository {
 
         let [results] = await connection.query(query, cateNo);
 
-        connection.release();
+        let postObj = {};
+        postObj.posts = results;
 
-        return results;
+        if (limit) {
+          addLimit = `LIMIT ${limit} OFFSET ${offset + limit};`;
+          const nextDataQuery = `SELECT P.post_no
+            FROM tb_post P
+            JOIN tb_post_img Pi ON Pi.post_no = P.post_no
+            JOIN tb_post_cate_rel Pcr ON Pcr.post_no = P.post_no
+            JOIN tb_post_cate Pc ON Pc.post_cate_no = Pcr.post_cate_no
+            WHERE P.status = 0 AND Pc.post_cate_no = ? AND Pi.view_seq = 0
+            ${addLimit};`;
+
+          let [nextData] = await connection.query(nextDataQuery, cateNo);
+
+          nextData.length > 0 ? (postObj.nextData = 1) : (postObj.nextData = 0);
+        }
+
+        return postObj;
       } catch (err) {
         console.log("Query Error!");
-        return err;
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!");
-      return err;
+      throw err;
     }
   };
 

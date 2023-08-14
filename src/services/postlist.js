@@ -17,7 +17,9 @@ class PostListService {
     const cateNo = await this.postListRepository.allCateNo();
 
     for (let i in cateNo) {
-      const posts = await this.postListRepository.allPost(cateNo[i].post_cate_no);
+      const postObj = await this.postListRepository.allPost(cateNo[i].post_cate_no);
+      let posts = postObj.posts;
+
       if (posts.length > 0) {
         for (let j in posts) {
           const hashs = await this.postListRepository.allHash(posts[j].post_no);
@@ -47,7 +49,8 @@ class PostListService {
   getPostCategory = async (cateNo, limit, offset) => {
     let allPostCategory = {};
 
-    const posts = await this.postListRepository.allPost(cateNo, limit, offset);
+    const postObj = await this.postListRepository.allPost(cateNo, limit, offset);
+    let posts = postObj.posts;
 
     if (posts.length > 0) {
       for (let i in posts) {
@@ -58,6 +61,7 @@ class PostListService {
 
       allPostCategory.postCateList = posts;
       allPostCategory.cateTitle = posts[0].cate_title;
+      allPostCategory.nextData = postObj.nextData;
 
       return allPostCategory;
     }

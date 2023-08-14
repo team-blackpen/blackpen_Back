@@ -54,6 +54,7 @@ class PostListController {
     }
   };
 
+  // 편지지 카테고리별 조회
   getPostCategory = async (req, res, next) => {
     try {
       const cateNo = req.params.post_cate_no;
@@ -65,7 +66,7 @@ class PostListController {
 
       const data = { cate_title: allPostCategory.cateTitle, postCategoryList: allPostCategory.postCateList };
 
-      res.status(200).json({ result: 0, msg: "카테고리별 편지지 조회", data });
+      res.status(200).json({ result: 0, msg: "카테고리별 편지지 조회", data, nextData: allPostCategory.nextData });
     } catch (err) {
       console.log(err);
       next(err);

@@ -31,7 +31,7 @@ module.exports = () => {
           const regDt = dayjs().format("YYYY-MM-DD hh:mm:ss");
           const connection = await pool.getConnection(async (corn) => corn);
           try {
-            const query = `SELECT user_no, nickname, heart_temper FROM tb_user 
+            const query = `SELECT user_no, nickname FROM tb_user 
               WHERE social_id = ? AND login_type = ?`;
 
             let [results] = await connection.query(query, [profile.id, "kakao"]);
@@ -48,7 +48,6 @@ module.exports = () => {
               const user = {
                 user_no: results2.insertId,
                 nickname: profile.displayName,
-                heart_temper: 10,
               };
 
               done(null, user);

@@ -44,7 +44,9 @@ class LetterService {
         } else {
           // 임시저장이면서 편지 번호가 있음
           const udtTmpLetter = await this.letterRepository.uptLetter(letterNo, userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 있으면 내용 수정 이미지는 있으면 수정
+
           if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
+          if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요.");
         }
       } else {
         // 편지 작성완료
@@ -61,7 +63,9 @@ class LetterService {
         } else {
           // 작성완료이면서 편지번호 있음
           const udtTmpLetter = await this.letterRepository.uptLetter(letterNo, userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 있으면 완료로 바꾸고 편지 발송 준비
+
           if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
+          if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요.");
           aligoStatus = 1;
         }
 

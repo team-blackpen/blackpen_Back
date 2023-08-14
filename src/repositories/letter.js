@@ -224,8 +224,10 @@ class LetterRepository {
         // 편지 상태 수정
         const uptLetter = `UPDATE tb_letter 
           SET status = ?, stage = ?, upt_dt = ? ${addWhere}
-          WHERE letter_no = ?;`;
+          WHERE letter_no = ? AND status = 0;`;
         const letter = await connection.query(uptLetter, addQurey);
+
+        if ((letter.affectedRows = 0)) return letter;
 
         // 편지 정보 수정
         const uptLetterInfo = `UPDATE tb_letter_info 

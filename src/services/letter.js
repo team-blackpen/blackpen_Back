@@ -143,6 +143,9 @@ class LetterService {
             throw new ErrorCustom(400, "알림톡 발송에 실패했습니다.");
           }
         }
+
+        // 마음온도 올리기
+        await this.letterRepository.plusHeart(userNo);
       }
 
       return letterNo;

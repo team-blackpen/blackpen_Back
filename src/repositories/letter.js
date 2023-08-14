@@ -311,6 +311,30 @@ class LetterRepository {
     }
   };
 
+  // 마음온도 올리기
+  plusHeart = async (userNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `UPDATE tb_user 
+          SET heart_temper = heart_temper + 0.5 
+          WHERE user_no = ?;`;
+
+        let [plusHeart] = await connection.query(query, [userNo]);
+
+        return plusHeart;
+      } catch (err) {
+        console.log("Query Error!");
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
   // 받은편지함 조회
   getLetterList = async (reUserNo) => {
     try {

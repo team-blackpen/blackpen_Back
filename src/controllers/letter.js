@@ -157,9 +157,9 @@ class LetterController {
       const limit = 5;
       offset = offset * limit;
 
-      const font = await this.letterService.getFont(limit, offset);
+      const fontData = await this.letterService.getFont(limit, offset);
 
-      res.status(200).json({ result: 0, msg: "폰트 조회 성공", data: { font } });
+      res.status(200).json({ result: 0, msg: "폰트 조회 성공", data: fontData.font, nextData: fontData.nextData });
     } catch (err) {
       console.log(err);
       next(err);

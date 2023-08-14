@@ -493,16 +493,24 @@ class LetterRepository {
   // 폰트 불러오기
   getFont = async (limit, offset) => {
     try {
-      let addLimit = `LIMIT ${limit} OFFSET ${offset};`;
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT font_no, font_title, font_url 
           FROM tb_font ORDER BY view_seq
-          ${addLimit}`;
+          LIMIT ? OFFSET ?;`;
 
-        let [font] = await connection.query(query);
+        let [font] = await connection.query(query, [limit, offset]);
 
-        return font;
+        let fontData = {};
+        fontData.font = font;
+
+        // 다음 데이터가 있는지 확인
+        offset = offset + limit;
+        let [nextFont] = await connection.query(query, [limit, offset]);
+
+        nextFont.length > 0 ? (fontData.nextData = 1) : (fontData.nextData = 0);
+
+        return fontData;
       } catch (err) {
         console.log("Query Error!", err);
         throw new ErrorCustom(500, "Query Error!");

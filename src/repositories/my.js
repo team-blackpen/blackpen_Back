@@ -1,7 +1,6 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
-const ErrorCustom = require("../middlewares/errorCustom");
 
 class MyRepository {
   getLetterCnt = async (userNo, status) => {
@@ -15,14 +14,14 @@ class MyRepository {
 
         return letterCnt[0].letterCnt;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -37,14 +36,14 @@ class MyRepository {
 
         return postWishCnt[0].postWishCnt;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -59,13 +58,13 @@ class MyRepository {
 
         return heartTemper[0];
       } catch (err) {
-        console.log("Query Error!", err);
+        console.log("Query Error!");
         throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
+      console.log("DB ERROR!");
       throw err;
     }
   };

@@ -1,7 +1,6 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
-const ErrorCustom = require("../middlewares/errorCustom");
 
 class PostRepository {
   postDetail = async (userNo, postNo) => {
@@ -31,14 +30,14 @@ class PostRepository {
 
         return results[0];
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -79,14 +78,14 @@ class PostRepository {
 
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 }

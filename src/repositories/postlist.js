@@ -1,7 +1,6 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
-const ErrorCustom = require("../middlewares/errorCustom");
 
 class PostListRepository {
   allCategory = async (userNo) => {
@@ -24,12 +23,12 @@ class PostListRepository {
 
         let [results] = await connection.query(query, addQurey);
 
-        connection.release();
-
         return results;
       } catch (err) {
         console.log("Query Error!");
         throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!");
@@ -47,16 +46,16 @@ class PostListRepository {
 
         let [results] = await connection.query(query);
 
-        connection.release();
-
         return results;
       } catch (err) {
         console.log("Query Error!");
-        return err;
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!");
-      return err;
+      throw err;
     }
   };
 
@@ -128,16 +127,16 @@ class PostListRepository {
 
         let [results] = await connection.query(query, postNo);
 
-        connection.release();
-
         return results;
       } catch (err) {
         console.log("Query Error!");
-        return err;
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!");
-      return err;
+      throw err;
     }
   };
 
@@ -152,16 +151,16 @@ class PostListRepository {
 
         let [results] = await connection.query(query, userNo);
 
-        connection.release();
-
         return results;
       } catch (err) {
         console.log("Query Error!");
-        return err;
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!");
-      return err;
+      throw err;
     }
   };
 
@@ -169,6 +168,8 @@ class PostListRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
+        await connection.beginTransaction(); // 트랜잭션 적용 시작
+
         const query = `SELECT post_wish_no, user_no, post_no, status
         FROM tb_post_wish
         WHERE user_no = ? AND post_no = ?;`;
@@ -201,19 +202,22 @@ class PostListRepository {
           }
         }
 
-        connection.release();
-
         insPostWish.userNo = userNo;
         insPostWish.postNo = postNo;
 
+        await connection.commit(); // 커밋
+
         return insPostWish;
       } catch (err) {
-        console.log("Query Error!", err);
-        return err;
+        console.log("Query Error!");
+        await connection.rollback(); // 롤백
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      return err;
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -245,16 +249,16 @@ class PostListRepository {
 
         let [results] = await connection.query(query, params);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        return err;
+        console.log("Query Error!");
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      return err;
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 }

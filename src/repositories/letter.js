@@ -1,7 +1,6 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
-const ErrorCustom = require("../middlewares/errorCustom");
 require("dotenv").config();
 let hashKey = process.env.HASH_KEY;
 
@@ -25,14 +24,14 @@ class LetterRepository {
 
         return letterNo[0];
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
   // 임시저장 편지 확인하는 쿼리 사용안하는중
@@ -195,14 +194,14 @@ class LetterRepository {
 
         return letterNo;
       } catch (err) {
-        console.log("Query Error!", err);
+        console.log("Query Error!");
         await connection.rollback(); // 롤백
         throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
+      console.log("DB ERROR!");
       throw err;
     }
   };
@@ -266,14 +265,14 @@ class LetterRepository {
 
         return letter;
       } catch (err) {
-        console.log("Query Error!", err);
+        console.log("Query Error!");
         await connection.rollback(); // 롤백
         throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
+      console.log("DB ERROR!");
       throw err;
     }
   };
@@ -298,15 +297,15 @@ class LetterRepository {
 
         return letter;
       } catch (err) {
-        console.log("Query Error!", err);
+        console.log("Query Error!");
         await connection.rollback(); // 롤백
-        return err;
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      return err;
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -318,7 +317,7 @@ class LetterRepository {
         const query = `SELECT L.letter_no, L.user_no, L.post_no, Li.sender, L.send_dt 
           FROM tb_letter L 
           JOIN tb_letter_info Li ON L.letter_no = Li.letter_no
-          WHERE L.recipient_user_no = ? AND L.status = 2`;
+          WHERE L.recipient_user_no = ? AND L.status = 1`;
 
         let [letterList] = await connection.query(query, reUserNo);
 
@@ -333,14 +332,14 @@ class LetterRepository {
 
         return letterList;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -360,14 +359,14 @@ class LetterRepository {
 
         return letterTmpList;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -385,14 +384,14 @@ class LetterRepository {
 
         return deleteLetter.changedRows;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -442,14 +441,14 @@ class LetterRepository {
 
         return letter[0];
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -479,14 +478,14 @@ class LetterRepository {
 
         return letterTmp[0];
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -512,14 +511,14 @@ class LetterRepository {
 
         return fontData;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!");
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 }

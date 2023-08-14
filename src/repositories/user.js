@@ -13,16 +13,16 @@ class PostListRepository {
 
         let [results] = await connection.query(query, [userNo]);
 
-        connection.release();
-
         return results[0];
       } catch (err) {
         console.log("Query Error!");
-        return err;
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!");
-      return err;
+      throw err;
     }
   };
 }

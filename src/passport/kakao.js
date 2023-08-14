@@ -57,14 +57,14 @@ module.exports = () => {
 
             return;
           } catch (err) {
-            console.log("Query Error!", err);
-            throw new ErrorCustom(500, "Query Error!");
-            done(err);
+            console.log("Query Error!");
+            throw err;
+          } finally {
+            connection.release();
           }
         } catch (err) {
-          console.log("DB ERROR!", err);
-          throw new ErrorCustom(500, "DB ERROR!");
-          done(err);
+          console.log("DB ERROR!");
+          throw err;
         }
       }
     )

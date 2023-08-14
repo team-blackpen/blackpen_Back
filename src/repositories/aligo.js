@@ -1,7 +1,6 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
-const ErrorCustom = require("../middlewares/errorCustom");
 
 class AligoRepository {
   // 알림톡 템플릿 가져오기
@@ -16,12 +15,14 @@ class AligoRepository {
 
         return template[0];
       } catch (err) {
-        console.log("Query Error!", err);
-        return err;
+        console.log("Query Error!");
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      return err;
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 }

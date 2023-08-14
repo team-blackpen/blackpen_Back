@@ -197,9 +197,9 @@ class LetterService {
     }
   };
 
-  getFont = async () => {
+  getFont = async (limit, offset) => {
     try {
-      const getFont = await this.letterRepository.getFont();
+      const getFont = await this.letterRepository.getFont(limit, offset);
       return getFont;
     } catch (err) {
       throw new ErrorCustom(400, "폰트 조회 실패");

@@ -491,12 +491,14 @@ class LetterRepository {
   };
 
   // 폰트 불러오기
-  getFont = async () => {
+  getFont = async (limit, offset) => {
     try {
+      let addLimit = `LIMIT ${limit} OFFSET ${offset};`;
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT font_no, font_title, font_url 
-          FROM tb_font ORDER BY view_seq;`;
+          FROM tb_font ORDER BY view_seq
+          ${addLimit}`;
 
         let [font] = await connection.query(query);
 

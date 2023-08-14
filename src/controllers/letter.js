@@ -153,7 +153,11 @@ class LetterController {
   // 폰트 조회
   getFont = async (req, res, next) => {
     try {
-      const font = await this.letterService.getFont();
+      let offset = req.query.page - 1;
+      const limit = 5;
+      offset = offset * limit;
+
+      const font = await this.letterService.getFont(limit, offset);
 
       res.status(200).json({ result: 0, msg: "폰트 조회 성공", data: { font } });
     } catch (err) {

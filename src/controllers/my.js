@@ -8,7 +8,7 @@ class LetterController {
     try {
       const user = res.locals.user;
       const userNo = user.user_no;
-      const status = 2;
+      const status = 1;
 
       const letterCnt = await this.myService.getLetterCnt(userNo, status);
 

@@ -58,7 +58,8 @@ class LetterService {
           if (creatLetter.errno) throw new ErrorCustom(500, "디비 에러");
 
           letterNo = creatLetter;
-          tmpURL = tmpURL + `/letter/guest/${creatLetter.hash_no}`;
+          // tmpURL = tmpURL + `/letter/guest/${creatLetter.hash_no}`; 게스트 조회 되면 사용
+          tmpURL = tmpURL + `/main`; // 임시 주소
           aligoStatus = 1;
         } else {
           // 작성완료이면서 편지번호 있음
@@ -66,6 +67,10 @@ class LetterService {
 
           if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
           if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요.");
+
+          letterNo = creatLetter;
+          // tmpURL = tmpURL + `/letter/guest/${udtTmpLetter.hash_no}`; 게스트 조회 되면 사용
+          tmpURL = tmpURL + `/main`; // 임시 주소
           aligoStatus = 1;
         }
 

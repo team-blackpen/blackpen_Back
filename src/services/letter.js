@@ -51,14 +51,14 @@ class LetterService {
       } else {
         // 편지 작성완료
         let aligoStatus = 0;
+        let tmpURL = process.env.tmpURL;
         if (letterNo == 0) {
           // 작성완료이면서 편지번호 없음
           const creatLetter = await this.letterRepository.insLetter(userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 없으면 바로 편지발송 준비
-          console.log(creatLetter);
           if (creatLetter.errno) throw new ErrorCustom(500, "디비 에러");
-          // 에러 나면 디비단은 로그만 남기고 에러는 서비스단에서 넘기는걸로 쿼리에러는 잡는데 디비에러는 못잡는중
 
           letterNo = creatLetter;
+          tmpURL = tmpURL + `/letter/guest/${creatLetter.hash_no}`;
           aligoStatus = 1;
         } else {
           // 작성완료이면서 편지번호 있음
@@ -97,7 +97,7 @@ class LetterService {
 
           template.template_msg = template.template_msg.replace(/#{발신인명}/g, info.sender);
           template.template_msg = template.template_msg.replace(/#{수신인명}/g, info.recipient);
-          template.template_msg = template.template_msg.replace(/#{URL링크}/g, process.env.tmpURL);
+          template.template_msg = template.template_msg.replace(/#{URL링크}/g, tmpURL);
 
           obj.body = {
             senderkey: process.env.ALIGOSENDERKEY, // 발신프로필 키

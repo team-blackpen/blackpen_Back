@@ -190,9 +190,13 @@ class LetterRepository {
           }
         }
 
+        // 작성 편지 암호화 값 가져오기
+        const getLetterQuery = `SELECT letter_no, hash_no FROM tb_letter WHERE letter_no = ?`;
+        const [hashLetterNo] = await connection.query(getLetterQuery, [letterNo]);
+
         await connection.commit(); // 커밋
 
-        return letterNo;
+        return hashLetterNo[0];
       } catch (err) {
         console.log("Query Error!");
         await connection.rollback(); // 롤백
@@ -263,9 +267,13 @@ class LetterRepository {
           }
         }
 
+        // 작성 편지 암호화 값 가져오기
+        const getLetterQuery = `SELECT letter_no, hash_no FROM tb_letter WHERE letter_no = ?`;
+        const [hashLetterNo] = await connection.query(getLetterQuery, [letterNo]);
+
         await connection.commit(); // 커밋
 
-        return letter;
+        return hashLetterNo[0];
       } catch (err) {
         console.log("Query Error!");
         await connection.rollback(); // 롤백

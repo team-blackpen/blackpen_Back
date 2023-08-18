@@ -176,14 +176,14 @@ class AdminRepository {
         }
 
         if (postData.post_img.length > 0) {
-          for (let i in postData.hashtag) {
+          for (let i in postData.post_img) {
             const insImg = `INSERT INTO tb_post_img (post_no, img_url, status, view_seq, reg_dt) VALUES (?, ?, 0, ?, ?);`;
             await connection.query(insImg, [postNo, postData.post_img[i].img_url, i, postData.regDt]);
           }
         }
 
         if (postData.post_detail_img.length > 0) {
-          for (let i in postData.hashtag) {
+          for (let i in postData.post_detail_img) {
             const insDetailImg = `INSERT INTO tb_post_detail_img (post_no, img_url, status, view_seq, reg_dt) VALUES (?, ?, 0, ?, ?);`;
             await connection.query(insDetailImg, [postNo, postData.post_detail_img[i].img_url, i, postData.regDt]);
           }

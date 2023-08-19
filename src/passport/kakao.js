@@ -28,7 +28,7 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const regDt = dayjs().format("YYYY-MM-DD hh:mm:ss");
+          const regDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
           const connection = await pool.getConnection(async (corn) => corn);
           try {
             const query = `SELECT user_no, nickname FROM tb_user 

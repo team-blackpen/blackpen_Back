@@ -23,7 +23,7 @@ class LetterService {
 
   creatLetter = async (userNo, letter) => {
     try {
-      const now = dayjs().format("YYYY-MM-DD hh:mm:ss");
+      const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
 
       let letterNo = letter.letterNo;
       const postNo = letter.postNo;
@@ -192,7 +192,7 @@ class LetterService {
 
   getLetter = async (userNo, letterNo, hashLetter) => {
     try {
-      const now = dayjs().format("YYYY-MM-DD hh:mm:ss");
+      const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
       const getLetter = await this.letterRepository.getLetter(userNo, letterNo, hashLetter, now);
       return getLetter;
     } catch (err) {

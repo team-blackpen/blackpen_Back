@@ -70,7 +70,7 @@ class PostListService {
   };
 
   insPostWish = async (userNo, postNo) => {
-    const now = dayjs().format("YYYY-MM-DD hh:mm:ss");
+    const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
 
     const insPostWish = await this.postListRepository.insPostWish(userNo, postNo, now);
 

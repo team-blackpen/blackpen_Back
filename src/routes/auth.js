@@ -13,11 +13,11 @@ const kakaoCallback = (req, res, next) => {
       { failureRedirect: "/" }, // 실패하면 '/user/login''로 돌아감.
       async (err, user, info) => {
         if (err) return next(err);
-        const { user_no, nickname } = user;
+        const { user_no, nickname, user_img_url } = user;
 
         const accessToken = jwt.sign({ user_no: user_no, nickname: nickname }, process.env.JWT_KEY, { expiresIn: "3h" });
 
-        result = { user_no, accessToken, nickname };
+        result = { user_no, accessToken, nickname, user_img_url };
         res.status(200).json({ result: 0, msg: "카카오 성공", data: result });
       }
     )(req, res, next);

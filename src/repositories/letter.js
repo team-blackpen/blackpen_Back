@@ -324,7 +324,7 @@ class LetterRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `UPDATE tb_user 
+        const query = `UPDATE tb_user_profile  
           SET heart_temper = heart_temper + 0.5 
           WHERE user_no = ?;`;
 

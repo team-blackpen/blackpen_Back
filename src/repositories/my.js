@@ -51,7 +51,7 @@ class MyRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT user_no, nickname, heart_temper FROM tb_user 
+        const query = `SELECT user_no, nickname, heart_temper FROM tb_user_profile  
         WHERE user_no = ?;`;
 
         let [heartTemper] = await connection.query(query, userNo);

@@ -8,7 +8,7 @@ class PostListRepository {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT user_no, nickname 
-        FROM tb_user 
+        FROM tb_user_profile 
         WHERE user_no = ?;`;
 
         let [results] = await connection.query(query, [userNo]);

@@ -17,7 +17,7 @@ class AdminService {
   };
 
   creatPost = async (postData) => {
-    postData.regDt = dayjs().format("YYYY-MM-DD hh:mm:ss");
+    postData.regDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
     console.log("🚀 ~ file: admin.js:21 ~ AdminService ~ creatPost= ~ postData:", postData);
 
     await this.adminRepository.insPost(postData);

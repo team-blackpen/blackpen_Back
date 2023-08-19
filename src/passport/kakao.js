@@ -54,12 +54,11 @@ module.exports = () => {
             if (user.length > 0) {
               done(null, user[0]); // 로그인 인증 완료
             } else {
-              // 닉네임, 온도 지워야함
               const insUser = `INSERT INTO tb_user 
-                (nickname, social_id, access_token, login_type, heart_temper, reg_dt) 
-			          VALUES (?, ?, ?, ?, ?, ?);`;
+                (social_id, access_token, login_type, reg_dt) 
+			          VALUES (?, ?, ?, ?);`;
 
-              let [insNewUser] = await connection.query(insUser, [profile.displayName, profile.id, accessToken, profile.provider, 10, regDt]);
+              let [insNewUser] = await connection.query(insUser, [profile.id, accessToken, profile.provider, regDt]);
 
               const insUserProfile = `INSERT INTO tb_user_profile
                 (user_no, nickname, user_img_url, heart_temper, email, name, gender, user_phone, age_range, birth_year, birthday)

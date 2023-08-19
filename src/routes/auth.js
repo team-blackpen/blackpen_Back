@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const router = express.Router();
-// const passport = require("../passport/kakao");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
@@ -15,7 +14,7 @@ const kakaoCallback = (req, res, next) => {
         if (err) return next(err);
         const { user_no, nickname, user_img_url } = user;
 
-        const accessToken = jwt.sign({ user_no: user_no, nickname: nickname }, process.env.JWT_KEY, { expiresIn: "3h" });
+        const accessToken = jwt.sign({ user_no: user_no, nickname: nickname, user_img_url: user_img_url }, process.env.JWT_KEY, { expiresIn: "3h" });
 
         result = { user_no, accessToken, nickname, user_img_url };
         res.status(200).json({ result: 0, msg: "카카오 성공", data: result });

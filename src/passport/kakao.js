@@ -46,7 +46,7 @@ module.exports = () => {
             await connection.beginTransaction(); // 트랜잭션 적용 시작
             const query = `SELECT U.user_no, Up.nickname, Up.user_img_url 
               FROM tb_user U 
-              JOIN tb_user_profile Up ON Up.uer_no = U.user_no 
+              JOIN tb_user_profile Up ON Up.user_no = U.user_no 
               WHERE social_id = ? AND login_type = ?`;
 
             let [user] = await connection.query(query, [profile.id, profile.provider]);

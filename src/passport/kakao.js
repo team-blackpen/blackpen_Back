@@ -30,35 +30,20 @@ module.exports = () => {
         try {
           const regDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
           const profileProperties = profile._json.properties;
-          console.log("🚀 ~ file: kakao.js:33 ~ profileProperties:", profileProperties);
           const profileInfo = profile._json.kakao_account;
-          console.log("🚀 ~ file: kakao.js:34 ~ profileInfo:", profileInfo);
           let nickname = profileProperties.nickname;
-          console.log("🚀 ~ file: kakao.js:37 ~ nickname:", nickname);
           let userImg = profileProperties.thumbnail_image ? profileProperties.thumbnail_image : "";
-          console.log("🚀 ~ file: kakao.js:39 ~ userImg:", userImg);
           let email = profileInfo.email;
-          console.log("🚀 ~ file: kakao.js:41 ~ email:", email);
-          let name = profileInfo.name;
-          console.log("🚀 ~ file: kakao.js:43 ~ name:", name);
-          let gender = "";
-          if (profileInfo.gender == "male") {
-            gender = 1;
-          } else if (profileInfo.gender == "female") {
-            gender = 2;
-          }
-          console.log("🚀 ~ file: kakao.js:49 ~ gender:", gender);
+          let name = profileInfo.name ? profileInfo.name : "";
+          let gender = profileInfo.gender ? profileInfo.gender : "";
           let phone = profileInfo.phone_number;
-          console.log("🚀 ~ file: kakao.js:52 ~ phone:", phone);
           let ageRange = profileInfo.age_range ? profileInfo.age_range : "";
-          console.log("🚀 ~ file: kakao.js:54 ~ ageRange:", ageRange);
           let birthYear = profileInfo.birthyear ? profileInfo.birthyear : "";
-          console.log("🚀 ~ file: kakao.js:56 ~ birthYear:", birthYear);
           let birthday = profileInfo.birthday ? profileInfo.birthday : "";
-          console.log("🚀 ~ file: kakao.js:57 ~ birthday:", birthday);
 
           const connection = await pool.getConnection(async (corn) => corn);
           try {
+            await connection.beginTransaction(); // 트랜잭션 적용 시작
             const query = `SELECT U.user_no, Up.nickname, Up.user_img_url 
               FROM tb_user U 
               JOIN tb_user_profile Up ON Up.uer_no = U.user_no 
@@ -76,24 +61,27 @@ module.exports = () => {
 
               let [insNewUser] = await connection.query(insUser, [profile.displayName, profile.id, accessToken, profile.provider, 10, regDt]);
 
-              // const insUserProfile = `INSERT INTO tb_user_profile
-              //   (user_no, nickname, user_img_url, heart_temper, email, name, gender, user_phone, age_range, birthday, birth_year)
-              //   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+              const insUserProfile = `INSERT INTO tb_user_profile
+                (user_no, nickname, user_img_url, heart_temper, email, name, gender, user_phone, age_range, birth_year, birthday)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
-              // let [insNewUserProfile] = await connection.query(insUserProfile, [insNewUser.insertId, profile.displayName, profile., 10, profile., profile.username, profile., profile., profile., profile., profile.]);
+              let [insNewUserProfile] = await connection.query(insUserProfile, [insNewUser.insertId, nickname, userImg, 10, email, name, gender, phone, ageRange, birthYear, birthday]);
 
               const newUser = {
                 user_no: insNewUser.insertId,
-                nickname: profile.displayName,
-                // user_img_url: profile.
+                nickname: nickname,
+                user_img_url: userImg,
               };
 
               done(null, newUser);
             }
 
+            await connection.commit(); // 커밋
+
             return;
           } catch (err) {
             console.log("Query Error!");
+            await connection.rollback(); // 롤백
             throw err;
           } finally {
             connection.release();

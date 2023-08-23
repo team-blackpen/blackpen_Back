@@ -493,9 +493,11 @@ class LetterRepository {
       try {
         const query = `SELECT L.letter_no, L.user_no, L.post_no, L.status, L.stage, 
         Lc.letter_contents_no, Lc.letter_contents, 
-        Li.font_no, Li.recipient, Li.recipient_phone, Li.sender, Li.sender_phone, Li.reservation_status, Li.reservation_dt
+        Li.font_no, F.font_title, 
+        Li.recipient, Li.recipient_phone, Li.sender, Li.sender_phone, Li.reservation_status, Li.reservation_dt
         FROM tb_letter L 
         JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
+        JOIN tb_font F ON Li.font_no = F.font_no 
         JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 0
         WHERE L.letter_no = ? AND L.user_no = ? AND L.status = 0;`;
 

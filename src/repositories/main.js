@@ -15,7 +15,7 @@ class MainRepository {
 
         return letterListCnt[0].letterListCnt;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -41,7 +41,7 @@ class MainRepository {
 
         return letterTmpList;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();

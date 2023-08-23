@@ -14,7 +14,7 @@ class MyRepository {
 
         return letterCnt[0].letterCnt;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -36,7 +36,7 @@ class MyRepository {
 
         return postWishCnt[0].postWishCnt;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -58,7 +58,7 @@ class MyRepository {
 
         return heartTemper[0];
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();

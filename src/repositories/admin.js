@@ -1,7 +1,6 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
-const ErrorCustom = require("../middlewares/errorCustom");
 
 class AdminRepository {
   findArtist = async (atristName) => {
@@ -12,16 +11,16 @@ class AdminRepository {
 
         let [results] = await connection.query(query, [atristName]);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -33,16 +32,16 @@ class AdminRepository {
 
         let [results] = await connection.query(query, [atristName]);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -54,16 +53,16 @@ class AdminRepository {
 
         let [results] = await connection.query(query, [postData.post_title, postData.post_description, postData.regDt]);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -75,16 +74,16 @@ class AdminRepository {
 
         let [results] = await connection.query(query, [postData.artist_no, postNo]);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -99,16 +98,16 @@ class AdminRepository {
 
         let [results] = await connection.query(query, [postData.post_cate_no, postNo, postData.post_cate_no, postData.regDt]);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -138,16 +137,16 @@ class AdminRepository {
       try {
         let [results] = await connection.query(query, [postNo, column, postNo, regDt]);
 
-        connection.release();
-
         return results;
       } catch (err) {
-        console.log("Query Error!", err);
-        throw new ErrorCustom(500, "Query Error!");
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
       }
     } catch (err) {
-      console.log("DB ERROR!", err);
-      throw new ErrorCustom(500, "DB ERROR!");
+      console.log("DB ERROR!");
+      throw err;
     }
   };
 
@@ -193,16 +192,15 @@ class AdminRepository {
 
         return;
       } catch (err) {
-        console.log(err);
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백
-        return err;
+        throw err;
       } finally {
         connection.release();
       }
     } catch (err) {
       console.log("DB ERROR!");
-      return err;
+      throw err;
     }
   };
 }

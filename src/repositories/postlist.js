@@ -25,7 +25,7 @@ class PostListRepository {
 
         return results;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -48,7 +48,7 @@ class PostListRepository {
 
         return results;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -104,7 +104,7 @@ class PostListRepository {
 
         return postObj;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -129,7 +129,7 @@ class PostListRepository {
 
         return results;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -153,7 +153,7 @@ class PostListRepository {
 
         return results;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -209,7 +209,7 @@ class PostListRepository {
 
         return insPostWish;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백
         throw err;
       } finally {
@@ -251,7 +251,7 @@ class PostListRepository {
 
         return results;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();

@@ -24,7 +24,7 @@ class LetterRepository {
 
         return letterNo[0];
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -74,7 +74,7 @@ class LetterRepository {
 
         return letterNo;
       } catch (err) {
-        console.log("Query Error!", err);
+        console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백
         return err;
       } finally {
@@ -118,7 +118,7 @@ class LetterRepository {
 
         return letter;
       } catch (err) {
-        console.log("Query Error!", err);
+        console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백
         return err;
       } finally {
@@ -198,7 +198,7 @@ class LetterRepository {
 
         return hashLetterNo[0];
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백
         throw err;
       } finally {
@@ -275,7 +275,7 @@ class LetterRepository {
 
         return hashLetterNo[0];
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백
         throw err;
       } finally {
@@ -307,7 +307,7 @@ class LetterRepository {
 
         return letter;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백
         throw err;
       } finally {
@@ -332,7 +332,7 @@ class LetterRepository {
 
         return plusHeart;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -366,7 +366,7 @@ class LetterRepository {
 
         return letterList;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -393,7 +393,7 @@ class LetterRepository {
 
         return letterTmpList;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -418,7 +418,7 @@ class LetterRepository {
 
         return deleteLetter.changedRows;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -515,7 +515,7 @@ class LetterRepository {
 
         return letterTmp[0];
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();
@@ -550,7 +550,7 @@ class LetterRepository {
 
         return fontData;
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();

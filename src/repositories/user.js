@@ -15,7 +15,7 @@ class PostListRepository {
 
         return results[0];
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();

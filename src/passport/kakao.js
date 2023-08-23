@@ -79,7 +79,7 @@ module.exports = () => {
 
             return;
           } catch (err) {
-            console.log("Query Error!");
+            console.log("Query Error!", err.sqlMessage);
             await connection.rollback(); // 롤백
             throw err;
           } finally {

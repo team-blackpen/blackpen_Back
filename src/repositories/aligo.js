@@ -15,7 +15,7 @@ class AligoRepository {
 
         return template[0];
       } catch (err) {
-        console.log("Query Error!");
+        console.log("Query Error!", err.sqlMessage);
         throw err;
       } finally {
         connection.release();

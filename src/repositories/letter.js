@@ -529,7 +529,9 @@ class LetterRepository {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT font_no, font_title, font_url 
-          FROM tb_font ORDER BY view_seq
+          FROM tb_font 
+          WHERE status = 1
+          ORDER BY view_seq
           LIMIT ? OFFSET ?;`;
 
         let [font] = await connection.query(query, [limit, offset]);

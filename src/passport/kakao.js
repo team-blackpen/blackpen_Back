@@ -37,6 +37,8 @@ module.exports = () => {
           let name = profileInfo.name ? profileInfo.name : "";
           let gender = profileInfo.gender ? profileInfo.gender : "";
           let phone = profileInfo.phone_number;
+          console.log("🚀 ~ file: kakao.js:40 ~ phone:", phone);
+          console.log("🚀 ~ file: kakao.js:40 ~ phone:", typeof phone);
           let ageRange = profileInfo.age_range ? profileInfo.age_range : "";
           let birthYear = profileInfo.birthyear ? profileInfo.birthyear : "";
           let birthday = profileInfo.birthday ? profileInfo.birthday : "";
@@ -65,17 +67,37 @@ module.exports = () => {
 
               done(null, user[0]); // 로그인 인증 완료
             } else {
+              // 회원 정보 없으면 생성(회원가입)
               const insUser = `INSERT INTO tb_user 
                 (social_id, access_token, login_type, reg_dt) 
 			          VALUES (?, ?, ?, ?);`;
 
               let [insNewUser] = await connection.query(insUser, [profile.id, accessToken, profile.provider, regDt]);
+              console.log("🚀 ~ file: kakao.js:76 ~ insNewUser.insertId:", insNewUser.insertId);
 
               const insUserProfile = `INSERT INTO tb_user_profile
                 (user_no, nickname, user_img_url, heart_temper, email, name, gender, user_phone, age_range, birth_year, birthday)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
               let [insNewUserProfile] = await connection.query(insUserProfile, [insNewUser.insertId, nickname, userImg, 10, email, name, gender, phone, ageRange, birthYear, birthday]);
+
+              // 가입할때 편지에서 폰번호로 내 편지 조회해서 나에게 종속
+              const myLetterQuery = `SELECT letter_no FROM tb_letter_info WHERE recipient_phone = ?;`;
+
+              let [myLetter] = await connection.query(myLetterQuery, [phone]);
+              console.log("🚀 ~ file: kakao.js:87 ~ myLetter:", myLetter);
+
+              if (myLetter.length > 0) {
+                myLetter = myLetter.map((letter) => letter.letter_no).join(", ");
+                console.log("🚀 ~ file: kakao.js:89 ~ myLetter:", myLetter);
+
+                // 가입자에게 편지 종속
+                const dependentQuery = `UPDATE tb_letter 
+                  SET recipient_user_no = ? 
+                  WHERE letter_no IN (?);`;
+
+                await connection.query(dependentQuery, [insNewUser.insertId, myLetter]);
+              }
 
               const newUser = {
                 user_no: insNewUser.insertId,

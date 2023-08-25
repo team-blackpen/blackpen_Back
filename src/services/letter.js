@@ -45,8 +45,8 @@ class LetterService {
           // 임시저장이면서 편지 번호가 있음
           const udtTmpLetter = await this.letterRepository.uptLetter(letterNo, userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 있으면 내용 수정 이미지는 있으면 수정
 
-          if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
-          if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요.");
+          // if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
+          // if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요."); // 수정필요
         }
       } else {
         // 편지 작성완료
@@ -65,17 +65,17 @@ class LetterService {
           // 작성완료이면서 편지번호 있음
           const udtTmpLetter = await this.letterRepository.uptLetter(letterNo, userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 있으면 완료로 바꾸고 편지 발송 준비
 
-          if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
-          if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요.");
+          // if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
+          // if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요."); // 수정필요
 
-          letterNo = creatLetter;
+          letterNo = udtTmpLetter;
           // tmpURL = tmpURL + `/letter/guest/${udtTmpLetter.hash_no}`; 게스트 조회 되면 사용
           tmpURL = tmpURL + `/main`; // 임시 주소
           aligoStatus = 1;
         }
 
         // 알림톡 발송
-        // aligoStatus = 0; // 임시
+        // aligoStatus = 0; // 알림톡 안보내기 임시
         if (aligoStatus == 1) {
           // 토큰 발급
           let objToken = {};
@@ -151,6 +151,9 @@ class LetterService {
 
         // 마음온도 올리기
         await this.letterRepository.plusHeart(userNo);
+
+        // 발송한 편지 유저 조회해서 종속
+        await this.letterRepository.dependentLetter(info.recipientPhone, letterNo.letter_no);
       }
 
       return letterNo;

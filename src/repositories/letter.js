@@ -101,7 +101,7 @@ class LetterRepository {
         await connection.beginTransaction(); // 트랜잭션 적용 시작
 
         // 편지 상태 수정
-        const uptLetter = `UPDATE tb_letter 
+        const uptLetter = `UPDATE tb_letter
           SET status = ?, stage = ?, upt_dt = ? ${addWhere}
           WHERE letter_no = ? AND status = 0;`;
         const letter = await connection.query(uptLetter, addQurey);
@@ -206,6 +206,37 @@ class LetterRepository {
         let [plusHeart] = await connection.query(query, [userNo]);
 
         return plusHeart;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
+  // 발송한 편지 받는 번호의 유저가 있으면 바로 종속
+  dependentLetter = async (recipientPhone, letterNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT user_no FROM tb_user_profile
+          WHERE user_phone = ?;`;
+
+        let [userNo] = await connection.query(query, [recipientPhone]);
+
+        if (userNo.length > 0) {
+          const dependentQuery = `UPDATE tb_letter 
+            SET recipient_user_no = ? 
+            WHERE letter_no = ?;`;
+
+          await connection.query(dependentQuery, [userNo[0].user_no, letterNo]);
+        }
+
+        return;
       } catch (err) {
         console.log("Query Error!", err.sqlMessage);
         throw err;

@@ -96,9 +96,11 @@ module.exports = () => {
                 // 가입자에게 편지 종속
                 const dependentQuery = `UPDATE tb_letter 
                   SET recipient_user_no = ? 
-                  WHERE letter_no IN (?);`;
+                  WHERE letter_no IN (${myLetter});`;
+				  
+				  console.log("dependentQuery", dependentQuery)
 
-                await connection.query(dependentQuery, [insNewUser.insertId, myLetter]);
+                await connection.query(dependentQuery, [insNewUser.insertId]);
               }
 
               const newUser = {

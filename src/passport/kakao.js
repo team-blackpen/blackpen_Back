@@ -39,6 +39,8 @@ module.exports = () => {
           let phone = profileInfo.phone_number;
           console.log("🚀 ~ file: kakao.js:40 ~ phone:", phone);
           console.log("🚀 ~ file: kakao.js:40 ~ phone:", typeof phone);
+          phone = phone.replace(/\D/g, "").replace(/^82/, "0");
+          console.log("🚀 ~ file: kakao.js:43 ~ phone:", phone);
           let ageRange = profileInfo.age_range ? profileInfo.age_range : "";
           let birthYear = profileInfo.birthyear ? profileInfo.birthyear : "";
           let birthday = profileInfo.birthday ? profileInfo.birthday : "";

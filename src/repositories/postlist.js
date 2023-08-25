@@ -13,9 +13,10 @@ class PostListRepository {
       }
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT C.post_cate_no, C.cate_title, C.view_seq 
+        const query = `SELECT C.post_cate_no, C.cate_title, C.view_seq
           FROM tb_post_cate C
-          JOIN tb_post_cate_rel Pcr ON Pcr.post_cate_no = C.post_cate_no
+          JOIN tb_post_cate_rel Pcr ON C.post_cate_no = Pcr.post_cate_no
+          JOIN tb_post P ON P.post_no = Pcr.post_no AND P.status = 0 
           ${addJoin}
           WHERE C.status = 0
           GROUP BY Pcr.post_cate_no
@@ -71,14 +72,14 @@ class PostListRepository {
         const query = `SELECT P.post_no, P.post_title, P.post_description, 
         Pi.post_img_no, Pi.img_url,
         Pc.post_cate_no, Pc.cate_title, 
-        A.artist_no, A.artist_name
-        FROM tb_post P
-        JOIN tb_post_img Pi ON Pi.post_no = P.post_no
-        JOIN tb_post_cate_rel Pcr ON Pcr.post_no = P.post_no
-        JOIN tb_post_cate Pc ON Pc.post_cate_no = Pcr.post_cate_no
-        JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no
+        A.artist_no, A.artist_name 
+        FROM tb_post P 
+        JOIN tb_post_img Pi ON Pi.post_no = P.post_no AND Pi.view_seq = 0 
+        JOIN tb_post_cate_rel Pcr ON Pcr.post_no = P.post_no 
+        JOIN tb_post_cate Pc ON Pc.post_cate_no = Pcr.post_cate_no AND Pc.post_cate_no = ? 
+        JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no 
         JOIN tb_artist A ON A.artist_no = Ar.artist_no 
-        WHERE P.status = 0 AND Pc.post_cate_no = ? AND Pi.view_seq = 0
+        WHERE P.status = 0 
         ORDER BY Pc.view_seq, Pcr.view_seq
         ${addLimit};`;
 

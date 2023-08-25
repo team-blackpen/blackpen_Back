@@ -5,10 +5,13 @@ const pool = mysql.createPool(dbConfig);
 class MyRepository {
   getLetterCnt = async (userNo, status) => {
     try {
+      let where = `L.recipient_user_no = ?;`;
+      if (status == 0) where = `L.user_no = ?;`;
+
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT COUNT(L.letter_no) AS letterCnt FROM tb_letter L 
-          WHERE L.status = ? AND L.recipient_user_no = ?;`;
+          WHERE L.status = ? AND ${where}`;
 
         let [letterCnt] = await connection.query(query, [status, userNo]);
 

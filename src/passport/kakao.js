@@ -33,6 +33,7 @@ module.exports = () => {
           const profileInfo = profile._json.kakao_account;
           let nickname = profileProperties.nickname;
           let userImg = profileProperties.thumbnail_image ? profileProperties.thumbnail_image : "";
+          console.log("🚀 ~ file: kakao.js:36 ~ userImg:", userImg);
           let email = profileInfo.email;
           let name = profileInfo.name ? profileInfo.name : "";
           let gender = profileInfo.gender ? profileInfo.gender : "";
@@ -50,8 +51,25 @@ module.exports = () => {
               WHERE social_id = ? AND login_type = ?`;
 
             let [user] = await connection.query(query, [profile.id, profile.provider]);
+            console.log("🚀 ~ file: kakao.js:53 ~ user:", user);
+            console.log("🚀 ~ file: kakao.js:54 ~ user[0]:", user[0]);
 
             if (user.length > 0) {
+              // 프로필 변경
+              console.log(111);
+              if (userImg != user[0].user_img_url) {
+                const uptProfile = `UPDATE tb_user_profile 
+                  SET user_img_url = ? AND upt_dt = ? 
+                  WHERE user_no = ?;`;
+
+                console.log(222);
+                await connection.query(uptProfile, [userImg, regDt, user[0].user_no]);
+                console.log(333);
+                user[0].user_img_url = userImg;
+                console.log(444);
+              }
+              console.log("🚀 ~ file: kakao.js:65 ~ user[0]:", user[0]);
+
               done(null, user[0]); // 로그인 인증 완료
             } else {
               const insUser = `INSERT INTO tb_user 

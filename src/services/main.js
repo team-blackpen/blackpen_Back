@@ -10,7 +10,7 @@ class MainService {
       const getLetterListCnt = await this.mainRepository.getLetterListCnt(userNo);
       return getLetterListCnt;
     } catch (err) {
-      throw new ErrorCustom(400, "메인 편지함 조회 실패");
+      throw new ErrorCustom(400, "메인 새로운 편지 카운트 조회 실패");
     }
   };
 
@@ -19,7 +19,7 @@ class MainService {
       const getLetterTmpList = await this.mainRepository.getLetterTmpList(userNo);
       return getLetterTmpList;
     } catch (err) {
-      throw new ErrorCustom(400, "메인 임지저장 조회 실패");
+      throw new ErrorCustom(400, "메인 임시편지 리스트 3개 조회 실패");
     }
   };
 }

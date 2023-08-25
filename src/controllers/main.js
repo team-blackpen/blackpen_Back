@@ -11,7 +11,7 @@ class LetterController {
 
       const letterListCnt = await this.mainService.getLetterListCnt(userNo);
 
-      res.status(200).json({ result: 0, msg: "메인 편지함 조회 성공", data: { letterListCnt } });
+      res.status(200).json({ result: 0, msg: "메인 새로운 편지 카운트 조회 성공", data: { letterListCnt } });
     } catch (err) {
       console.log(err);
       next(err);
@@ -26,7 +26,7 @@ class LetterController {
 
       const letterTmpList = await this.mainService.getLetterTmpList(userNo);
 
-      res.status(200).json({ result: 0, msg: "메인 임시저장 조회 성공", data: { letterTmpList } });
+      res.status(200).json({ result: 0, msg: "메인 임시편지 리스트 3개 조회 성공", data: { letterTmpList } });
     } catch (err) {
       console.log(err);
       next(err);

@@ -3,7 +3,7 @@ const MainService = require("../services/main");
 class LetterController {
   mainService = new MainService();
 
-  // 편지한 안읽은 편지 갯수 조회
+  // 편지함 안읽은 편지 갯수 조회
   getLetterListCnt = async (req, res, next) => {
     try {
       const user = res.locals.user;

@@ -2,9 +2,9 @@ require("dotenv").config();
 const LetterRepository = require("../repositories/letter");
 const AligoRepository = require("../repositories/aligo");
 const PostRepository = require("../repositories/post");
-const dayjs = require("dayjs");
 const ErrorCustom = require("../middlewares/errorCustom");
 const aligoapi = require("aligoapi");
+const dayjs = require("dayjs");
 const timezone = require("dayjs/plugin/timezone");
 const utc = require("dayjs/plugin/utc");
 
@@ -60,8 +60,6 @@ class LetterService {
           if (creatLetter.errno) throw new ErrorCustom(500, "디비 에러");
 
           letterNo = creatLetter;
-          // tmpURL = tmpURL + `/letter/guest/${creatLetter.hash_no}`; 게스트 조회 되면 사용
-          tmpURL = tmpURL + `/main`; // 임시 주소
           aligoStatus = 1;
         } else {
           // 작성완료이면서 편지번호 있음
@@ -71,8 +69,6 @@ class LetterService {
           // if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요."); // 수정필요
 
           letterNo = udtTmpLetter;
-          // tmpURL = tmpURL + `/letter/guest/${udtTmpLetter.hash_no}`; 게스트 조회 되면 사용
-          tmpURL = tmpURL + `/main`; // 임시 주소
           aligoStatus = 1;
         }
 
@@ -88,9 +84,9 @@ class LetterService {
           };
 
           const resultToken = await aligoapi.token(objToken, AuthData);
-          console.log("🚀 ~ file: letter.js:78 ~ LetterService ~ creatLetter= ~ resultToken:", resultToken);
+          console.log("resultToken:", resultToken);
           if (resultToken.code != 0) {
-            console.log(resultToken);
+            console.log("토큰발급 실패", resultToken);
             await this.letterRepository.rollBackLetter(letterNo, now); // 알림톡 실패 시 임시저장으로 다시변경
             throw new ErrorCustom(400, "알림톡 발송에 실패했습니다.");
           }
@@ -104,6 +100,7 @@ class LetterService {
 
           template.template_msg = template.template_msg.replace(/#{발신인명}/g, info.sender);
           template.template_msg = template.template_msg.replace(/#{수신인명}/g, info.recipient);
+          tmpURL = tmpURL + letterNo.hash_no;
           template.template_msg = template.template_msg.replace(/#{URL링크}/g, tmpURL);
 
           obj.body = {
@@ -141,11 +138,11 @@ class LetterService {
           }
 
           const aligoResult = await aligoapi.alimtalkSend(obj, AuthData);
-          console.log("🚀 ~ file: letter.js:129 ~ LetterService ~ creatLetter= ~ aligoResult:", aligoResult);
+          console.log("aligoResult:", aligoResult);
 
           // 발송 실패 시
           if (aligoResult.code != 0) {
-            console.log(resultToken);
+            console.log("발송실패 ", resultToken);
             const rollBackLetter = await this.letterRepository.rollBackLetter(letterNo, now); // 알림톡 실패 시 임시저장으로 다시변경
             throw new ErrorCustom(400, "알림톡 발송에 실패했습니다.");
           }

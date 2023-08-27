@@ -71,6 +71,27 @@ class MyRepository {
       throw err;
     }
   };
+
+  changeNickname = async (userNo, nickname, uptDt) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `UPDATE tb_user_profile SET nickname = ?, upt_dt = ? WHERE user_no = ?;`;
+
+        await connection.query(query, [nickname, uptDt, userNo]);
+
+        return;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
 }
 
 module.exports = MyRepository;

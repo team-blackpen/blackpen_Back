@@ -59,6 +59,20 @@ class LetterController {
       next(err);
     }
   };
+
+  changeNickname = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const { nickname } = req.body;
+
+      await this.myService.changeNickname(userNo, nickname);
+
+      res.status(200).json({ result: 0, msg: "닉네임 변경 성공", data: { userNo, nickname } });
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

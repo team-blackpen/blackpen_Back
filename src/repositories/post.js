@@ -68,6 +68,15 @@ class PostRepository {
           WHERE P.post_no = ? AND P.status = 0
           ORDER BY Pdi.view_seq;`;
           break;
+
+        case "postPreviewImg":
+          query = `SELECT Ppi.post_preview_img_no, Ppi.img_url 
+          FROM tb_post P
+          JOIN tb_post_preview_img Ppi ON Ppi.post_no = P.post_no AND Ppi.status = 0
+          WHERE P.post_no = ? AND P.status = 0
+          ORDER BY Ppi.view_seq;`;
+          break;
+
         default:
           break;
       }

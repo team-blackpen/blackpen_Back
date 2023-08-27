@@ -1,6 +1,7 @@
 require("dotenv").config();
 const LetterRepository = require("../repositories/letter");
 const AligoRepository = require("../repositories/aligo");
+const PostRepository = require("../repositories/post");
 const dayjs = require("dayjs");
 const ErrorCustom = require("../middlewares/errorCustom");
 const aligoapi = require("aligoapi");
@@ -20,6 +21,7 @@ const AuthData = {
 class LetterService {
   letterRepository = new LetterRepository();
   aligoRepository = new AligoRepository();
+  postRepository = new PostRepository();
 
   creatLetter = async (userNo, letter) => {
     try {
@@ -196,7 +198,11 @@ class LetterService {
   getLetter = async (userNo, letterNo, hashLetter) => {
     try {
       const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
       const getLetter = await this.letterRepository.getLetter(userNo, letterNo, hashLetter, now);
+      const postPreviewImg = await this.postRepository.postEtc(getLetter.post_no, "postPreviewImg");
+      getLetter.post_preview_img = postPreviewImg;
+
       return getLetter;
     } catch (err) {
       throw new ErrorCustom(400, "편지 조회 실패");

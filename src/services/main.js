@@ -22,6 +22,20 @@ class MainService {
       throw new ErrorCustom(400, "메인 임시편지 리스트 3개 조회 실패");
     }
   };
+
+  getQuote = async () => {
+    try {
+      const quoteList = await this.mainRepository.getQuote();
+
+      let max = quoteList.length; // 0 ~ length 글귀가 추가되도 수정할 필요 없음
+      const randomInt = Math.floor(Math.random() * max);
+      let quote = quoteList[randomInt];
+
+      return quote;
+    } catch (err) {
+      throw new ErrorCustom(400, "메인 글귀 랜덤 조회 실패");
+    }
+  };
 }
 
 module.exports = MainService;

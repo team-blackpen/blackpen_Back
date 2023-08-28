@@ -32,6 +32,18 @@ class LetterController {
       next(err);
     }
   };
+
+  // 메인 글귀 랜덤 조회
+  getQuote = async (req, res, next) => {
+    try {
+      const quote = await this.mainService.getQuote();
+
+      res.status(200).json({ result: 0, msg: "메인 글귀 랜덤 조회 성공", data: { quote } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

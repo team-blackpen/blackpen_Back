@@ -51,6 +51,29 @@ class MainRepository {
       throw err;
     }
   };
+
+  getQuote = async () => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT quote_no, quote, author, category 
+          FROM tb_quote 
+          WHERE status = 1;`;
+
+        let [quoteList] = await connection.query(query);
+
+        return quoteList;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
 }
 
 module.exports = MainRepository;

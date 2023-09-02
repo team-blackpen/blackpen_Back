@@ -5,7 +5,7 @@ class PostController {
 
   getPostDetail = async (req, res, next) => {
     try {
-      let userNo = 1;
+      let userNo;
       if (res.locals.user) {
         const user = res.locals.user;
         userNo = user.user_no;

@@ -394,6 +394,54 @@ class LetterRepository {
     }
   };
 
+  // 받은편지가 맞는지 확인(보낸사람 user_no)
+  letterCheck = async (userNo, letterNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT user_no AS sendUser
+          FROM tb_letter L 
+          WHERE L.recipient_user_no = ? AND L.letter_no = ? AND L.status = 1;`;
+
+        let [letterCheck] = await connection.query(query, [userNo, letterNo]);
+
+        return letterCheck[0];
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
+  // 감동메세지
+  postThankMsg = async (userNo, thankMsg, letterNo, regDt) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `INSERT INTO tb_thank_msg 
+          (user_no, letter_no, thank_msg, reg_dt) 
+          VALUES (?, ?, ?, ?);`;
+
+        await connection.query(query, [userNo, thankMsg, letterNo, regDt]);
+
+        return;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
   // 임시편지 불러오기
   getLetterTmp = async (userNo, letterNo) => {
     try {

@@ -134,6 +134,23 @@ class LetterController {
     }
   };
 
+  // 감동 메세지 보내기
+  postThankMsg = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const { letterNo } = req.body;
+      const { thankMsg } = req.body;
+
+      await this.letterService.postThankMsg(userNo, letterNo, thankMsg);
+
+      res.status(200).json({ result: 0, msg: "감동 메세지 보내기 성공" });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
   // 임시저장 편지 불러오기
   getLetterTmp = async (req, res, next) => {
     try {

@@ -206,6 +206,26 @@ class LetterService {
     }
   };
 
+  postThankMsg = async (userNo, letterNo, thankMsg) => {
+    try {
+      const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
+      let letterCheck = await this.letterRepository.letterCheck(userNo, letterNo);
+
+      if (!letterCheck) {
+        throw new ErrorCustom(400, "자신의 편지에만 감동메세지를 보낼 수 있습니다.");
+      }
+
+      await this.letterRepository.postThankMsg(userNo, letterNo, thankMsg, now);
+      await this.letterRepository.plusHeart(userNo); // 마음온도 올리기
+      await this.letterRepository.plusHeart(letterCheck.sendUser); // 보낸사람 마음온도 올리기
+
+      return;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   getLetterTmp = async (userNo, letterNo) => {
     try {
       const letterTmp = await this.letterRepository.getLetterTmp(userNo, letterNo);

@@ -56,6 +56,26 @@ class LetterController {
       next(err);
     }
   };
+
+  // 메인 선물하기 로그 수집
+  postGift = async (req, res, next) => {
+    try {
+      let userNo;
+      if (res.locals.user) {
+        const user = res.locals.user;
+        userNo = user.user_no;
+      }
+
+      const { giftPrice } = req.body;
+
+      await this.mainService.postGift(userNo, giftPrice);
+
+      res.status(200).json({ result: 0, msg: "메인 선물하기 로그 수집 성공" });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

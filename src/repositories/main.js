@@ -98,6 +98,29 @@ class MainRepository {
       throw err;
     }
   };
+
+  postGift = async (userNo, giftPrice, today) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `INSERT INTO tb_gift_log 
+          (user_no, gift_price, reg_dt) 
+          VALUES (?, ?, ?);`;
+
+        await connection.query(query, [userNo, giftPrice, today]);
+
+        return;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
 }
 
 module.exports = MainRepository;

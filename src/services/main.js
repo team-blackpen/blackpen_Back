@@ -54,6 +54,18 @@ class MainService {
       throw new ErrorCustom(400, "메인 기념일 조회 실패");
     }
   };
+
+  postGift = async (userNo, giftPrice) => {
+    try {
+      const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
+      await this.mainRepository.postGift(userNo, giftPrice, now);
+
+      return;
+    } catch (err) {
+      throw new ErrorCustom(400, "메인 선물하기 로그 수집 실패");
+    }
+  };
 }
 
 module.exports = MainService;

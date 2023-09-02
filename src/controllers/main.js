@@ -44,6 +44,18 @@ class LetterController {
       next(err);
     }
   };
+
+  // 메인 기념일 조회
+  getAnniversary = async (req, res, next) => {
+    try {
+      const anniversary = await this.mainService.getAnniversary();
+
+      res.status(200).json({ result: 0, msg: "메인 기념일 조회 성공", data: { anniversary } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
 }
 
 module.exports = LetterController;

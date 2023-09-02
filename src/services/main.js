@@ -1,6 +1,12 @@
 const ErrorCustom = require("../middlewares/errorCustom");
-
 const MainRepository = require("../repositories/main");
+const dayjs = require("dayjs");
+const timezone = require("dayjs/plugin/timezone");
+const utc = require("dayjs/plugin/utc");
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Seoul");
 
 class MainService {
   mainRepository = new MainRepository();
@@ -34,6 +40,18 @@ class MainService {
       return quote;
     } catch (err) {
       throw new ErrorCustom(400, "메인 글귀 랜덤 조회 실패");
+    }
+  };
+
+  getAnniversary = async () => {
+    try {
+      const today = dayjs().format("YYYYMMDD");
+
+      const anniversary = await this.mainRepository.getAnniversary(today);
+
+      return anniversary;
+    } catch (err) {
+      throw new ErrorCustom(400, "메인 기념일 조회 실패");
     }
   };
 }

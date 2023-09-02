@@ -74,6 +74,30 @@ class MainRepository {
       throw err;
     }
   };
+
+  getAnniversary = async (today) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT anniversary_no, date, anniversary_title, anniversary_des 
+          FROM tb_anniversary 
+          WHERE DATE >= ? 
+          LIMIT 1;`;
+
+        let [anniversary] = await connection.query(query, [today]);
+
+        return anniversary;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
 }
 
 module.exports = MainRepository;

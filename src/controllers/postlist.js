@@ -3,6 +3,7 @@ const PostListService = require("../services/postlist");
 class PostListController {
   postListService = new PostListService();
 
+  // 카테고리 항목 조회
   getCategory = async (req, res, next) => {
     try {
       const allCategory = await this.postListService.getCategory();
@@ -16,6 +17,7 @@ class PostListController {
     }
   };
 
+  // 모든 편지지 10개씩 조회
   getAllPost = async (req, res, next) => {
     try {
       const allPost = await this.postListService.getAllPost();
@@ -24,34 +26,6 @@ class PostListController {
 
       res.status(200).json({ result: 0, msg: "편지지 전체 조회", data });
     } catch {}
-  };
-
-  getPostWishCate = async (req, res, next) => {
-    try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
-      const allPostWishCate = await this.postListService.getPostWishCate(userNo);
-
-      const data = { postWishList: allPostWishCate };
-
-      res.status(200).json({ result: 0, msg: "편지지 찜목록 카테고리 조회", data });
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  getPostWish = async (req, res, next) => {
-    try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
-      const allPostWish = await this.postListService.getPostWish(userNo);
-
-      const data = { postWishList: allPostWish };
-
-      res.status(200).json({ result: 0, msg: "편지지 찜목록 조회", data });
-    } catch (err) {
-      next(err);
-    }
   };
 
   // 편지지 카테고리별 조회
@@ -90,13 +64,44 @@ class PostListController {
     }
   };
 
-  getPostWishList = async (req, res, next) => {
+  // 찜 등록한 편지지 모두 조회
+  getPostWish = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const allPostWish = await this.postListService.getPostWish(userNo);
+
+      const data = { postWishList: allPostWish };
+
+      res.status(200).json({ result: 0, msg: "편지지 찜목록 조회", data });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 찜목록에 내가 찜한 편지지의 카테고리 항목 조회
+  getPostWishCate = async (req, res, next) => {
+    try {
+      const user = res.locals.user;
+      const userNo = user.user_no;
+      const allPostWishCate = await this.postListService.getPostWishCate(userNo);
+
+      const data = { postWishList: allPostWishCate };
+
+      res.status(200).json({ result: 0, msg: "편지지 찜목록 카테고리 조회", data });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  // 찜목록 카테고리별 조회
+  getPostWishListCate = async (req, res, next) => {
     try {
       const user = res.locals.user;
       const userNo = user.user_no;
       const cateNo = req.params.post_cate_no;
 
-      const allPostWishList = await this.postListService.getPostWishList(userNo, cateNo);
+      const allPostWishList = await this.postListService.getPostWishListCate(userNo, cateNo);
 
       const data = { postWishList: allPostWishList };
 

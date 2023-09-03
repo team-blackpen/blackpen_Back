@@ -8,8 +8,9 @@ class AligoRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT template_no, template_code, template_title, template_msg, button_name, button_link, button_link_name, button_mo, button_pc
-        FROM tb_template WHERE template_title = ?`;
+        const query = `SELECT template_no, template_code, template_title, template_msg, button_name, button_link, button_link_name, button_mo, button_pc 
+          FROM tb_template 
+          WHERE template_title = ?`;
 
         let [template] = await connection.query(query, title);
 

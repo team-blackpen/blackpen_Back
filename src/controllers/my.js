@@ -3,7 +3,7 @@ const MyService = require("../services/my");
 class LetterController {
   myService = new MyService();
 
-  // 내 편지함 갯수 조회
+  // 서랍 내 편지함 갯수 조회
   getLetterCnt = async (req, res, next) => {
     try {
       const user = res.locals.user;
@@ -18,7 +18,7 @@ class LetterController {
     }
   };
 
-  // 내 임시저장 갯수 조회
+  // 서랍 내 임시저장 갯수 조회
   getLetterTmpCnt = async (req, res, next) => {
     try {
       const user = res.locals.user;
@@ -33,7 +33,7 @@ class LetterController {
     }
   };
 
-  // 내 찜목록 갯수 조회
+  // 서랍 내 찜목록 갯수 조회
   getPostWishCnt = async (req, res, next) => {
     try {
       const user = res.locals.user;
@@ -47,6 +47,7 @@ class LetterController {
     }
   };
 
+  // 내 마음온도
   getHeartTemper = async (req, res, next) => {
     try {
       const user = res.locals.user;
@@ -60,6 +61,7 @@ class LetterController {
     }
   };
 
+  // 닉네임 변경
   changeNickname = async (req, res, next) => {
     try {
       const user = res.locals.user;

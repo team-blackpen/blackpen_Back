@@ -34,18 +34,6 @@ class PostListService {
     return allPost;
   };
 
-  getPostWishCate = async (userNo) => {
-    const allPostWishCate = await this.postListRepository.allCategory(userNo);
-
-    return allPostWishCate;
-  };
-
-  getPostWish = async (userNo) => {
-    const allPostWish = await this.postListRepository.allPostWish(userNo);
-
-    return allPostWish;
-  };
-
   getPostCategory = async (cateNo, limit, offset) => {
     let allPostCategory = {};
 
@@ -77,8 +65,20 @@ class PostListService {
     return insPostWish;
   };
 
-  getPostWishList = async (userNo, cateNo) => {
-    const posts = await this.postListRepository.allPostWishList(userNo, cateNo);
+  getPostWish = async (userNo) => {
+    const allPostWish = await this.postListRepository.allPostWish(userNo);
+
+    return allPostWish;
+  };
+
+  getPostWishCate = async (userNo) => {
+    const allPostWishCate = await this.postListRepository.allCategory(userNo);
+
+    return allPostWishCate;
+  };
+
+  getPostWishListCate = async (userNo, cateNo) => {
+    const posts = await this.postListRepository.allPostWishListCate(userNo, cateNo);
 
     if (posts.length > 0) {
       for (let i in posts) {

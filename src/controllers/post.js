@@ -3,6 +3,7 @@ const PostService = require("../services/post");
 class PostController {
   postService = new PostService();
 
+  // 편지지 상세페이지
   getPostDetail = async (req, res, next) => {
     try {
       let userNo;

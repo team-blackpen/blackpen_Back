@@ -11,6 +11,6 @@ router.get("/category/:post_cate_no", postListController.getPostCategory); // �
 router.post("/wish", login.isLogin, postListController.insPostWish); // 찜 등록, 취소
 router.get("/wish", login.isLogin, postListController.getPostWish); // 찜 등록한 편지지 모두 조회
 router.get("/wish/cate", login.isLogin, postListController.getPostWishCate); // 찜목록에 내가 찜한 편지지의 카테고리 항목 조회
-router.get("/wish/list/:post_cate_no", login.isLogin, postListController.getPostWishList); // 찜목록 카테고리별 조회
+router.get("/wish/list/:post_cate_no", login.isLogin, postListController.getPostWishListCate); // 찜목록 카테고리별 조회
 
 module.exports = router;

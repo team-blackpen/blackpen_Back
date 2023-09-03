@@ -81,7 +81,8 @@ module.exports = () => {
               await connection.query(insUserProfile, [userNo, nickname, userImg, 10, email, name, gender, phone, ageRange, birthYear, birthday]);
 
               // 가입할때 편지에서 폰번호로 받은 편지 조회해서 종속
-              const myLetterQuery = `SELECT L.letter_no FROM tb_letter L
+              const myLetterQuery = `SELECT L.letter_no 
+                FROM tb_letter L
                 JOIN tb_letter_info Li ON L.letter_no = Li.letter_no AND Li.recipient_phone = ?
                 WHERE L.status = 1;`;
 

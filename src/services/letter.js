@@ -41,7 +41,8 @@ class LetterService {
         if (letterNo == 0) {
           // 임시저장이면서 편지 번호가 없음
           const creatTmpLetter = await this.letterRepository.insLetter(userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 없으면 내용 생성 이미지는 있으면 생성
-          if (creatTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
+          // if (creatTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
+
           letterNo = creatTmpLetter;
         } else {
           // 임시저장이면서 편지 번호가 있음
@@ -50,14 +51,14 @@ class LetterService {
           // if (udtTmpLetter.errno) throw new ErrorCustom(500, "디비 에러");
           // if (udtTmpLetter[0].affectedRows == 0) throw new ErrorCustom(400, "편지 정보를 다시 확인해주세요."); // 수정필요
         }
-      } else {
+      } else if (status == 1) {
         // 편지 작성완료
         let aligoStatus = 0;
         let tmpURL = process.env.tmpURL;
         if (letterNo == 0) {
           // 작성완료이면서 편지번호 없음
           const creatLetter = await this.letterRepository.insLetter(userNo, postNo, status, stage, contents, fontNo, info, img, now); // 임시편지 없으면 바로 편지발송 준비
-          if (creatLetter.errno) throw new ErrorCustom(500, "디비 에러");
+          // if (creatLetter.errno) throw new ErrorCustom(500, "디비 에러");
 
           letterNo = creatLetter;
           aligoStatus = 1;
@@ -197,12 +198,17 @@ class LetterService {
       const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
 
       const getLetter = await this.letterRepository.getLetter(userNo, letterNo, hashLetter, now);
+
+      if (!getLetter) {
+        throw new ErrorCustom(400, "조회 할 편지가 없습니다");
+      }
+
       const postPreviewImg = await this.postRepository.postEtc(getLetter.post_no, "postPreviewImg");
       getLetter.post_preview_img = postPreviewImg;
 
       return getLetter;
     } catch (err) {
-      throw new ErrorCustom(400, "편지 조회 실패");
+      throw err;
     }
   };
 

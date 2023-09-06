@@ -45,6 +45,18 @@ class LetterController {
     }
   };
 
+  // 메인 글귀 리스트 조회
+  getQuoteList = async (req, res, next) => {
+    try {
+      const quoteList = await this.mainService.getQuoteList();
+
+      res.status(200).json({ result: 0, msg: "메인 글귀 리스트 조회 성공", data: { quoteList } });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  };
+
   // 메인 기념일 조회
   getAnniversary = async (req, res, next) => {
     try {

@@ -43,6 +43,16 @@ class MainService {
     }
   };
 
+  getQuoteList = async () => {
+    try {
+      const quoteList = await this.mainRepository.getQuote();
+
+      return quoteList;
+    } catch (err) {
+      throw new ErrorCustom(400, "메인 글귀 리스트 조회 실패");
+    }
+  };
+
   getAnniversary = async () => {
     try {
       const today = dayjs().format("YYYYMMDD");

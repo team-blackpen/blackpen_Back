@@ -55,7 +55,7 @@ class MainRepository {
     }
   };
 
-  // 메인 글귀 랜덤 조회
+  // 메인 글귀 리스트 조회(랜덤)
   getQuote = async () => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);

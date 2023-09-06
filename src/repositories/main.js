@@ -10,10 +10,10 @@ class MainRepository {
       try {
         const query = `SELECT COUNT(L.letter_no) AS letterListCnt 
           FROM tb_letter L 
-          LEFT JOIN tb_letter_read_log Lrl ON L.letter_no = Lrl.letter_no 
-          WHERE L.status = 1 AND L.recipient_user_no = ? AND (Lrl.recipient_user_no IS NULL OR Lrl.recipient_user_no != 0);`;
+          LEFT JOIN tb_letter_read_log Lrl ON L.letter_no = Lrl.letter_no AND Lrl.recipient_user_no = ?
+          WHERE L.status = 1 AND L.recipient_user_no = ? AND Lrl.letter_read_log_no IS NULL;`;
 
-        let [letterListCnt] = await connection.query(query, userNo);
+        let [letterListCnt] = await connection.query(query, [userNo, userNo]);
 
         return letterListCnt[0].letterListCnt;
       } catch (err) {

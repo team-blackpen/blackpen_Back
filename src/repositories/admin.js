@@ -71,10 +71,14 @@ class AdminRepository {
         await connection.query(insPostArtRel, [postData.artist_no, postNo]);
 
         // 편지지 카테고리 관계
-        const insPostCateRel = `INSERT INTO tb_post_cate_rel 
-          (post_cate_no, post_no, view_seq, status, reg_dt)
-          VALUES (?, ?, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_cate_rel Pcr WHERE post_cate_no = ?), 1, ?);`;
-        await connection.query(insPostCateRel, [postData.post_cate_no, postNo, postData.post_cate_no, postData.regDt]);
+        if (postData.post_cate_no.length > 0) {
+          for (let i in postData.post_cate_no) {
+            const insPostCateRel = `INSERT INTO tb_post_cate_rel 
+              (post_cate_no, post_no, view_seq, status, reg_dt)
+              VALUES (?, ?, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_cate_rel Pcr WHERE post_cate_no = ?), 1, ?);`;
+            await connection.query(insPostCateRel, [postData.post_cate_no[i], postNo, postData.post_cate_no[i], postData.regDt]);
+          }
+        }
 
         // 해쉬태그
         if (postData.hashtag.length > 0) {

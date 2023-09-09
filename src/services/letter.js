@@ -173,7 +173,9 @@ class LetterService {
 
   getLetterTmpList = async (userNo) => {
     try {
-      const letterTmpList = await this.letterRepository.getLetterTmpList(userNo);
+      const yesterday = dayjs().subtract(1, "day").format("YYYY-MM-DD HH:mm:ss");
+
+      const letterTmpList = await this.letterRepository.getLetterTmpList(userNo, yesterday);
       return letterTmpList;
     } catch (err) {
       throw new ErrorCustom(400, "임시 편지 보관함 조회 실패");

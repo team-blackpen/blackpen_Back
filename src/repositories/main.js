@@ -29,18 +29,18 @@ class MainRepository {
   };
 
   // 메인 임시저장 목록 3개만 조회
-  getLetterTmpList = async (userNo) => {
+  getLetterTmpList = async (userNo, yesterday) => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT L.letter_no, L.user_no, L.post_no, IF(L.upt_dt, L.upt_dt, L.reg_dt) AS upt_dt, Lc.letter_contents_no, Lc.letter_contents 
           FROM tb_letter L 
           JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 1 
-          WHERE L.status = 0 AND L.user_no = ?
+          WHERE L.status = 0 AND L.user_no = ? AND COALESCE(L.upt_dt, L.reg_dt) > ? 
           ORDER BY upt_dt DESC
           LIMIT 3;`;
 
-        let [letterTmpList] = await connection.query(query, userNo);
+        let [letterTmpList] = await connection.query(query, [userNo, yesterday]);
 
         return letterTmpList;
       } catch (err) {

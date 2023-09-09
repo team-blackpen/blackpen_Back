@@ -295,8 +295,33 @@ class LetterRepository {
     }
   };
 
+  // 받은편지함 안읽은 편지 조회
+  getNewLetterList = async (userNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT L.letter_no 
+          FROM tb_letter L 
+          LEFT JOIN tb_letter_read_log Lrl ON L.letter_no = Lrl.letter_no AND Lrl.recipient_user_no = ? 
+          WHERE L.status = 1 AND L.recipient_user_no = ? AND Lrl.letter_read_log_no IS NULL;`;
+
+        let [newLetterList] = await connection.query(query, [userNo, userNo]);
+
+        return newLetterList;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
   // 임시편지함 조회
-  getLetterTmpList = async (userNo) => {
+  getLetterTmpList = async (userNo, yesterday) => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
@@ -304,10 +329,10 @@ class LetterRepository {
           FROM tb_letter L 
           JOIN tb_letter_contents Lc ON L.letter_no = Lc.letter_no AND Lc.status = 1 
           JOIN tb_post_img Pi ON L.post_no = Pi.post_no AND Pi.view_seq = 0 AND Pi.status = 1 
-          WHERE L.user_no = ? AND L.status = 0 
+          WHERE L.user_no = ? AND L.status = 0 AND COALESCE(L.upt_dt, L.reg_dt) > ? 
           ORDER BY upt_dt DESC;`;
 
-        let [letterTmpList] = await connection.query(query, userNo);
+        let [letterTmpList] = await connection.query(query, [userNo, yesterday]);
 
         return letterTmpList;
       } catch (err) {

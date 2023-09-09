@@ -13,7 +13,9 @@ class MainService {
 
   getLetterCnt = async (userNo, status) => {
     try {
-      const getLetterCnt = await this.myRepository.getLetterCnt(userNo, status);
+      const yesterday = dayjs().subtract(1, "day").format("YYYY-MM-DD HH:mm:ss");
+
+      const getLetterCnt = await this.myRepository.getLetterCnt(userNo, status, yesterday);
       return getLetterCnt;
     } catch (err) {
       throw new ErrorCustom(400, "내 편지함 / 임시저장 갯수 조회 실패");

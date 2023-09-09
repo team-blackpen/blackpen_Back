@@ -22,7 +22,9 @@ class MainService {
 
   getLetterTmpList = async (userNo) => {
     try {
-      const getLetterTmpList = await this.mainRepository.getLetterTmpList(userNo);
+      const yesterday = dayjs().subtract(1, "day").format("YYYY-MM-DD HH:mm:ss");
+
+      const getLetterTmpList = await this.mainRepository.getLetterTmpList(userNo, yesterday);
       return getLetterTmpList;
     } catch (err) {
       throw new ErrorCustom(400, "메인 임시편지 리스트 3개 조회 실패");

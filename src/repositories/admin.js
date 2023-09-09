@@ -7,11 +7,13 @@ class AdminRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT * FROM tb_artist WHERE artist_name = ?`;
+        const query = `SELECT * 
+          FROM tb_artist 
+          WHERE artist_name = ?;`;
 
-        let [results] = await connection.query(query, [atristName]);
+        let [result] = await connection.query(query, [atristName]);
 
-        return results;
+        return result;
       } catch (err) {
         console.log("Query Error!", err.sqlMessage);
         throw err;
@@ -28,116 +30,13 @@ class AdminRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `INSERT INTO tb_artist (artist_name) VALUES (?);`;
+        const query = `INSERT INTO tb_artist 
+          (artist_name) 
+          VALUES (?);`;
 
-        let [results] = await connection.query(query, [atristName]);
+        await connection.query(query, [atristName]);
 
-        return results;
-      } catch (err) {
-        console.log("Query Error!", err.sqlMessage);
-        throw err;
-      } finally {
-        connection.release();
-      }
-    } catch (err) {
-      console.log("DB ERROR!");
-      throw err;
-    }
-  };
-
-  creatPost = async (postData) => {
-    try {
-      const connection = await pool.getConnection(async (corn) => corn);
-      try {
-        const query = `INSERT INTO tb_post (post_title, post_description, status, reg_dt) VALUES (?, ?, 0, ?);`;
-
-        let [results] = await connection.query(query, [postData.post_title, postData.post_description, postData.regDt]);
-
-        return results;
-      } catch (err) {
-        console.log("Query Error!", err.sqlMessage);
-        throw err;
-      } finally {
-        connection.release();
-      }
-    } catch (err) {
-      console.log("DB ERROR!");
-      throw err;
-    }
-  };
-
-  creatArtistRel = async (postData, postNo) => {
-    try {
-      const connection = await pool.getConnection(async (corn) => corn);
-      try {
-        const query = `INSERT INTO tb_post_artist_rel (artist_no, post_no) VALUES (?, ?);`;
-
-        let [results] = await connection.query(query, [postData.artist_no, postNo]);
-
-        return results;
-      } catch (err) {
-        console.log("Query Error!", err.sqlMessage);
-        throw err;
-      } finally {
-        connection.release();
-      }
-    } catch (err) {
-      console.log("DB ERROR!");
-      throw err;
-    }
-  };
-
-  creatCateRel = async (postData, postNo) => {
-    try {
-      const connection = await pool.getConnection(async (corn) => corn);
-      try {
-        const query = `INSERT INTO tb_post_cate_rel 
-        (post_cate_no, post_no, view_seq, status, reg_dt) 
-        VALUES 
-        (?, ?, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_cate_rel Pcr WHERE post_cate_no = ?), 0, ?);`;
-
-        let [results] = await connection.query(query, [postData.post_cate_no, postNo, postData.post_cate_no, postData.regDt]);
-
-        return results;
-      } catch (err) {
-        console.log("Query Error!", err.sqlMessage);
-        throw err;
-      } finally {
-        connection.release();
-      }
-    } catch (err) {
-      console.log("DB ERROR!");
-      throw err;
-    }
-  };
-
-  creatEtc = async (postNo, table, column, regDt) => {
-    try {
-      let query;
-      switch (table) {
-        case "hashtag":
-          query = `INSERT INTO tb_post_hashtag (post_no, hashtag_title, status, view_seq, reg_dt) 
-          VALUES (?, ?, 0, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_hashtag Ph WHERE post_no = ?), ?);`;
-          break;
-
-        case "postImg":
-          query = `INSERT INTO tb_post_img (post_no, img_url, status, view_seq, reg_dt) 
-          VALUES (?, ?, 0, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_img Pi WHERE post_no = ?), ?);`;
-          break;
-
-        case "postDetailImg":
-          query = `INSERT INTO tb_post_detail_img (post_no, img_url, status, view_seq, reg_dt) 
-          VALUES (?, ?, 0, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_detail_img Pdi WHERE post_no = ?), ?);`;
-          break;
-        default:
-          break;
-      }
-
-      const connection = await pool.getConnection(async (corn) => corn);
-      try {
-        let [results] = await connection.query(query, [postNo, column, postNo, regDt]);
-
-        return results;
+        return;
       } catch (err) {
         console.log("Query Error!", err.sqlMessage);
         throw err;
@@ -156,35 +55,64 @@ class AdminRepository {
       try {
         await connection.beginTransaction(); // 트랜잭션 적용 시작
 
-        const insPost = `INSERT INTO tb_post (post_title, post_description, status, reg_dt) VALUES (?, ?, 0, ?);`;
+        // 편지지 생성
+        const insPost = `INSERT INTO tb_post 
+          (post_title, post_description, status, reg_dt) 
+          VALUES (?, ?, 1, ?);`;
+
         const [post] = await connection.query(insPost, [postData.post_title, postData.post_description, postData.regDt]);
         const postNo = post.insertId;
 
-        const insPostArtRel = `INSERT INTO tb_post_artist_rel (artist_no, post_no) VALUES (?, ?);`;
+        // 편지지 작가 관계
+        const insPostArtRel = `INSERT INTO tb_post_artist_rel 
+          (artist_no, post_no) 
+          VALUES (?, ?);`;
+
         await connection.query(insPostArtRel, [postData.artist_no, postNo]);
 
-        const insPostCateRel = `INSERT INTO tb_post_cate_rel (post_cate_no, post_no, view_seq, status, reg_dt)
-        VALUES (?, ?, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_cate_rel Pcr WHERE post_cate_no = ?), 0, ?);`;
+        // 편지지 카테고리 관계
+        const insPostCateRel = `INSERT INTO tb_post_cate_rel 
+          (post_cate_no, post_no, view_seq, status, reg_dt)
+          VALUES (?, ?, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_cate_rel Pcr WHERE post_cate_no = ?), 1, ?);`;
         await connection.query(insPostCateRel, [postData.post_cate_no, postNo, postData.post_cate_no, postData.regDt]);
 
+        // 해쉬태그
         if (postData.hashtag.length > 0) {
           for (let i in postData.hashtag) {
-            const insHash = `INSERT INTO tb_post_hashtag (post_no, hashtag_title, status, view_seq, reg_dt) VALUES (?, ?, 0, ?, ?);`;
+            const insHash = `INSERT INTO tb_post_hashtag 
+              (post_no, hashtag_title, status, view_seq, reg_dt) 
+              VALUES (?, ?, 1, ?, ?);`;
             await connection.query(insHash, [postNo, postData.hashtag[i].hashtag_title, i, postData.regDt]);
           }
         }
 
+        // 원본이미지
         if (postData.post_img.length > 0) {
           for (let i in postData.post_img) {
-            const insImg = `INSERT INTO tb_post_img (post_no, img_url, status, view_seq, reg_dt) VALUES (?, ?, 0, ?, ?);`;
+            const insImg = `INSERT INTO tb_post_img 
+              (post_no, img_url, status, view_seq, reg_dt) 
+              VALUES (?, ?, 1, ?, ?);`;
             await connection.query(insImg, [postNo, postData.post_img[i].img_url, i, postData.regDt]);
           }
         }
 
+        // 상세이미지
         if (postData.post_detail_img.length > 0) {
           for (let i in postData.post_detail_img) {
-            const insDetailImg = `INSERT INTO tb_post_detail_img (post_no, img_url, status, view_seq, reg_dt) VALUES (?, ?, 0, ?, ?);`;
+            const insDetailImg = `INSERT INTO tb_post_detail_img 
+              (post_no, img_url, status, view_seq, reg_dt) 
+              VALUES (?, ?, 1, ?, ?);`;
             await connection.query(insDetailImg, [postNo, postData.post_detail_img[i].img_url, i, postData.regDt]);
+          }
+        }
+
+        // 미리보기이미지
+        if (postData.post_preview_img.length > 0) {
+          for (let i in postData.post_preview_img) {
+            const insDetailImg = `INSERT INTO tb_post_preview_img 
+              (post_no, img_url, status, view_seq, reg_dt) 
+              VALUES (?, ?, 1, ?, ?);`;
+            await connection.query(insDetailImg, [postNo, postData.post_preview_img[i].img_url, i, postData.regDt]);
           }
         }
 

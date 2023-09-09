@@ -164,7 +164,16 @@ class LetterService {
 
   getLetterList = async (reUserNo) => {
     try {
-      const letterList = await this.letterRepository.getLetterList(reUserNo);
+      let letterList = await this.letterRepository.getLetterList(reUserNo);
+
+      let newLetterList = await this.letterRepository.getNewLetterList(reUserNo);
+      newLetterList = newLetterList.map((item) => item.letter_no);
+
+      // 읽지 않은 편지라면 new_letter = 1
+      letterList.forEach((letter) => {
+        newLetterList.includes(letter.letter_no) ? (letter.new_letter = 1) : (letter.new_letter = 0);
+      });
+
       return letterList;
     } catch (err) {
       throw new ErrorCustom(400, "편지 보관함 조회 실패");
@@ -173,7 +182,9 @@ class LetterService {
 
   getLetterTmpList = async (userNo) => {
     try {
-      const letterTmpList = await this.letterRepository.getLetterTmpList(userNo);
+      const yesterday = dayjs().subtract(1, "day").format("YYYY-MM-DD HH:mm:ss");
+
+      const letterTmpList = await this.letterRepository.getLetterTmpList(userNo, yesterday);
       return letterTmpList;
     } catch (err) {
       throw new ErrorCustom(400, "임시 편지 보관함 조회 실패");

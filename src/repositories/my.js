@@ -5,10 +5,10 @@ const pool = mysql.createPool(dbConfig);
 class MyRepository {
   // 서랍 내 편지함 갯수 조회
   // 서랍 내 임시저장 갯수 조회
-  getLetterCnt = async (userNo, status) => {
+  getLetterCnt = async (userNo, status, yesterday) => {
     try {
       let where = `L.recipient_user_no = ?;`;
-      if (status == 0) where = `L.user_no = ?;`;
+      if (status == 0) where = `L.user_no = ? AND COALESCE(L.upt_dt, L.reg_dt) > ?;`;
 
       const connection = await pool.getConnection(async (corn) => corn);
       try {
@@ -16,7 +16,7 @@ class MyRepository {
           FROM tb_letter L 
           WHERE L.status = ? AND ${where}`;
 
-        let [letterCnt] = await connection.query(query, [status, userNo]);
+        let [letterCnt] = await connection.query(query, [status, userNo, yesterday]);
 
         return letterCnt[0].letterCnt;
       } catch (err) {

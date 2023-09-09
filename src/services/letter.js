@@ -164,7 +164,16 @@ class LetterService {
 
   getLetterList = async (reUserNo) => {
     try {
-      const letterList = await this.letterRepository.getLetterList(reUserNo);
+      let letterList = await this.letterRepository.getLetterList(reUserNo);
+
+      let newLetterList = await this.letterRepository.getNewLetterList(reUserNo);
+      newLetterList = newLetterList.map((item) => item.letter_no);
+
+      // 읽지 않은 편지라면 new_letter = 1
+      letterList.forEach((letter) => {
+        newLetterList.includes(letter.letter_no) ? (letter.new_letter = 1) : (letter.new_letter = 0);
+      });
+
       return letterList;
     } catch (err) {
       throw new ErrorCustom(400, "편지 보관함 조회 실패");

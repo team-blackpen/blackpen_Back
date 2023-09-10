@@ -85,7 +85,7 @@ class PostListRepository {
           JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no 
           JOIN tb_artist A ON A.artist_no = Ar.artist_no 
           WHERE P.status = 1 
-          ORDER BY Pc.view_seq, Pcr.view_seq
+          ORDER BY P.reg_dt DESC, Pc.view_seq, Pcr.view_seq
           ${addLimit};`;
 
         let [results] = await connection.query(query, cateNo);

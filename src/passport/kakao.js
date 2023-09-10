@@ -78,7 +78,7 @@ module.exports = () => {
                 (user_no, nickname, user_img_url, heart_temper, email, name, gender, user_phone, age_range, birth_year, birthday)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
-              await connection.query(insUserProfile, [userNo, nickname, userImg, 10, email, name, gender, phone, ageRange, birthYear, birthday]);
+              await connection.query(insUserProfile, [userNo, nickname, userImg, 36, email, name, gender, phone, ageRange, birthYear, birthday]);
 
               // 가입할때 편지에서 폰번호로 받은 편지 조회해서 종속
               const myLetterQuery = `SELECT L.letter_no 

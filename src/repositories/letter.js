@@ -204,15 +204,15 @@ class LetterRepository {
   };
 
   // 마음온도 올리기
-  plusHeart = async (userNo) => {
+  plusHeart = async (userNo, temper) => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `UPDATE tb_user_profile 
-          SET heart_temper = heart_temper + 0.5 
+          SET heart_temper = heart_temper + ? 
           WHERE user_no = ?;`;
 
-        let [plusHeart] = await connection.query(query, [userNo]);
+        let [plusHeart] = await connection.query(query, [temper, userNo]);
 
         return plusHeart;
       } catch (err) {

@@ -150,7 +150,7 @@ class LetterService {
         }
 
         // 마음온도 올리기
-        await this.letterRepository.plusHeart(userNo);
+        await this.letterRepository.plusHeart(userNo, 1);
 
         // 발송한 편지 유저 조회해서 종속
         await this.letterRepository.dependentLetter(info.recipientPhone, letterNo.letter_no);
@@ -234,8 +234,8 @@ class LetterService {
       }
 
       await this.letterRepository.postThankMsg(userNo, letterNo, thankMsg, now);
-      await this.letterRepository.plusHeart(userNo); // 마음온도 올리기
-      await this.letterRepository.plusHeart(letterCheck.sendUser); // 보낸사람 마음온도 올리기
+      await this.letterRepository.plusHeart(userNo, 0.5); // 마음온도 올리기
+      await this.letterRepository.plusHeart(letterCheck.sendUser, 0.5); // 보낸사람 마음온도 올리기
 
       return;
     } catch (err) {

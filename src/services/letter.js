@@ -97,7 +97,7 @@ class LetterService {
           let obj = {};
           obj.headers = { "content-type": "application/x-www-form-urlencoded; charset=UTF-8" };
 
-          const template = await this.aligoRepository.getTemplate("전하다 테스트1");
+          const template = await this.aligoRepository.getTemplate("전하다 테스트2");
 
           template.template_msg = template.template_msg.replace(/#{발신인명}/g, info.sender);
           template.template_msg = template.template_msg.replace(/#{수신인명}/g, info.recipient);

@@ -6,8 +6,20 @@ const port = process.env.PORT;
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandler");
 const morgan = require("morgan");
+const dayjs = require("dayjs");
+const timezone = require("dayjs/plugin/timezone");
+const utc = require("dayjs/plugin/utc");
 
-app.use(morgan("[:remote-addr - :remote-user] [:date[iso]] :method :url HTTP/:http-version :status :response-time ms"));
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Seoul");
+
+app.use(
+  morgan(function (tokens, req, res) {
+    const koreanTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    return [koreanTime, tokens.method(req, res), tokens.url(req, res), tokens.status(req, res), tokens.res(req, res, "content-length"), "-", tokens["response-time"](req, res), "ms"].join(" ");
+  })
+);
 
 const domains = ["http://localhost:3000", "https://jeonhada-xoqca.run.goorm.site"];
 const corsOptions = {
@@ -16,6 +28,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// JSON 파싱 미들웨어
 app.use(express.json());
 
 const passport = require("passport");

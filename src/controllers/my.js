@@ -68,6 +68,9 @@ class LetterController {
       const userNo = user.user_no;
       const { nickname } = req.body;
 
+      const requestBody = JSON.stringify(req.body);
+      console.log(`changeNickname -  userNo: ${userNo} / Request Body: ${requestBody}`);
+
       await this.myService.changeNickname(userNo, nickname);
 
       res.status(200).json({ result: 0, msg: "닉네임 변경 성공", data: { userNo, nickname } });

@@ -15,8 +15,10 @@ class LetterController {
     try {
       const user = res.locals.user;
       const userNo = user.user_no;
-
       const letter = req.body;
+
+      const requestBody = JSON.stringify(req.body);
+      console.log(`creatLetter -  userNo: ${userNo} / Request Body: ${requestBody}`);
 
       if (letter.status == 1 && letter.letterImg.length < 1) throw new ErrorCustom(400, "편지 이미지가 없습니다");
 
@@ -76,6 +78,9 @@ class LetterController {
       const userNo = user.user_no;
       const letterList = req.body.letterList;
 
+      const requestBody = JSON.stringify(req.body);
+      console.log(`deleteLetter -  userNo: ${userNo} / Request Body: ${requestBody}`);
+
       const deleteLetter = await this.letterService.deleteLetter(userNo, letterList);
 
       res.status(200).json({ result: 0, msg: "편지 삭제 성공", data: { deleteLetter } });
@@ -92,6 +97,9 @@ class LetterController {
       const userNo = user.user_no;
       const letterList = req.body.letterList;
       const tmp = true;
+
+      const requestBody = JSON.stringify(req.body);
+      console.log(`deleteLetterTmp -  userNo: ${userNo} / Request Body: ${requestBody}`);
 
       const deleteLetter = await this.letterService.deleteLetter(userNo, letterList, tmp);
 
@@ -141,6 +149,9 @@ class LetterController {
       const userNo = user.user_no;
       const { letterNo } = req.body;
       const { thankMsg } = req.body;
+
+      const requestBody = JSON.stringify(req.body);
+      console.log(`postThankMsg -  userNo: ${userNo} / Request Body: ${requestBody}`);
 
       await this.letterService.postThankMsg(userNo, letterNo, thankMsg);
 

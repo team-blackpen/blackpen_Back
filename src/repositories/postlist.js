@@ -244,7 +244,11 @@ class PostListRepository {
     try {
       let addCateNo = "";
       let params = [userNo, cateNo];
-      if (cateNo != 0) {
+      let addGroupBy = "";
+
+      if (cateNo == 0) {
+        addGroupBy = `GROUP BY P.post_no`;
+      } else {
         addCateNo = `AND Pc.post_cate_no = ? `;
         params.push(cateNo);
       }
@@ -264,6 +268,7 @@ class PostListRepository {
           JOIN tb_artist A ON A.artist_no = Ar.artist_no 
           JOIN tb_post_wish Pw ON Pw.post_no = P.post_no AND user_no = ? 
           WHERE P.status = 1 ${addCateNo} 
+          ${addGroupBy} 
           ORDER BY upt_dt DESC;`;
 
         let [results] = await connection.query(query, params);

@@ -54,6 +54,9 @@ class PostListController {
       const userNo = user.user_no;
       const { postNo } = req.body;
 
+      const requestBody = JSON.stringify(req.body);
+      console.log(`insPostWish -  userNo: ${userNo} / Request Body: ${requestBody}`);
+
       const insPostWish = await this.postListService.insPostWish(userNo, postNo);
 
       const data = { userNo: insPostWish.userNo, postNo: insPostWish.postNo };

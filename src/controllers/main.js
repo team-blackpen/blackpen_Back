@@ -80,6 +80,9 @@ class LetterController {
 
       const { giftPrice } = req.body;
 
+      const requestBody = JSON.stringify(req.body);
+      console.log(`postGift -  userNo: ${userNo} / Request Body: ${requestBody}`);
+
       await this.mainService.postGift(userNo, giftPrice);
 
       res.status(200).json({ result: 0, msg: "메인 선물하기 로그 수집 성공" });

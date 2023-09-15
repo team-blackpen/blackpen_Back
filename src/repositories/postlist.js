@@ -69,8 +69,12 @@ class PostListRepository {
   allPost = async (cateNo, limit, offset) => {
     try {
       let addLimit = "";
-      limit ? (addLimit = `LIMIT ${limit} OFFSET ${offset};`) : (addLimit = "LIMIT 10;");
+      let addOrder = "";
+
       // limit이 있으면 카테고리별 조회 5개씩, 전체 조회는 10개만 조회
+      limit ? (addLimit = `LIMIT ${limit} OFFSET ${offset};`) : (addLimit = "LIMIT 10;");
+      // cate 가 NEW면 생성 순서대로 보여주고 그게 아니면 랜덤으로 보여줌
+      cateNo == 1 ? (addOrder = `P.reg_dt DESC, Pc.view_seq, Pcr.view_seq`) : (addOrder = `RAND()`);
 
       const connection = await pool.getConnection(async (corn) => corn);
       try {
@@ -85,7 +89,7 @@ class PostListRepository {
           JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no 
           JOIN tb_artist A ON A.artist_no = Ar.artist_no 
           WHERE P.status = 1 
-          ORDER BY P.reg_dt DESC, Pc.view_seq, Pcr.view_seq
+          ORDER BY ${addOrder} 
           ${addLimit};`;
 
         let [results] = await connection.query(query, cateNo);
@@ -93,6 +97,7 @@ class PostListRepository {
         let postObj = {};
         postObj.posts = results;
 
+        // 카테고리별 조회는 무한 스크롤로 다음 데이터가 있으면 1을 전달 해당 데이터가 마지막이라면 0을 전달
         if (limit) {
           addLimit = `LIMIT ${limit} OFFSET ${offset + limit};`;
           const nextDataQuery = `SELECT P.post_no 

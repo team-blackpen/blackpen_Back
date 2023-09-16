@@ -6,8 +6,7 @@ class LetterController {
   // 편지함 안읽은 편지 갯수 조회
   getLetterListCnt = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
 
       const letterListCnt = await this.mainService.getLetterListCnt(userNo);
 
@@ -21,8 +20,7 @@ class LetterController {
   // 임시저장 목록 3개만 조회
   getLetterTmpList = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
 
       const letterTmpList = await this.mainService.getLetterTmpList(userNo);
 
@@ -73,10 +71,7 @@ class LetterController {
   postGift = async (req, res, next) => {
     try {
       let userNo;
-      if (res.locals.user) {
-        const user = res.locals.user;
-        userNo = user.user_no;
-      }
+      if (res.locals.user) userNo = res.locals.user.user_no;
 
       const { giftPrice } = req.body;
 

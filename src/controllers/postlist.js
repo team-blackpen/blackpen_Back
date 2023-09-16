@@ -50,8 +50,7 @@ class PostListController {
   // 찜목록 등록 및 취소
   insPostWish = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const { postNo } = req.body;
 
       const requestBody = JSON.stringify(req.body);
@@ -70,8 +69,7 @@ class PostListController {
   // 찜 등록한 편지지 모두 조회
   getPostWish = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const allPostWish = await this.postListService.getPostWish(userNo);
 
       const data = { postWishList: allPostWish };
@@ -85,8 +83,7 @@ class PostListController {
   // 찜목록에 내가 찜한 편지지의 카테고리 항목 조회
   getPostWishCate = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const allPostWishCate = await this.postListService.getPostWishCate(userNo);
 
       const data = { postWishList: allPostWishCate };
@@ -100,8 +97,7 @@ class PostListController {
   // 찜목록 카테고리별 조회
   getPostWishListCate = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const cateNo = req.params.post_cate_no;
 
       const allPostWishList = await this.postListService.getPostWishListCate(userNo, cateNo);

@@ -7,10 +7,8 @@ class PostController {
   getPostDetail = async (req, res, next) => {
     try {
       let userNo;
-      if (res.locals.user) {
-        const user = res.locals.user;
-        userNo = user.user_no;
-      }
+      if (res.locals.user) userNo = res.locals.user.user_no;
+
       const postNo = req.params.post_no;
 
       const getPostDetail = await this.postService.getPostDetail(userNo, postNo);

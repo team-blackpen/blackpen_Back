@@ -13,8 +13,7 @@ class LetterController {
 
   creatLetter = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const letter = req.body;
 
       const requestBody = JSON.stringify(req.body);
@@ -44,8 +43,7 @@ class LetterController {
   // 편지보관함 조회
   getLetterList = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const reUserNo = user.user_no; // 받는사람 정보
+      const reUserNo = res.locals.user.user_no; // 받는사람 정보
 
       const letterList = await this.letterService.getLetterList(reUserNo);
 
@@ -59,8 +57,7 @@ class LetterController {
   // 임시편지보관함 조회
   getLetterTmpList = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
 
       const letterTmpList = await this.letterService.getLetterTmpList(userNo);
 
@@ -74,8 +71,7 @@ class LetterController {
   // 편지 리스트 삭제
   deleteLetter = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const letterList = req.body.letterList;
 
       const requestBody = JSON.stringify(req.body);
@@ -93,8 +89,7 @@ class LetterController {
   // 임시 편지 리스트 삭제
   deleteLetterTmp = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const letterList = req.body.letterList;
       const tmp = true;
 
@@ -113,8 +108,7 @@ class LetterController {
   // 유저 편지 조회
   getLetter = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       let letterNo = req.query.letter_no;
 
       const letter = await this.letterService.getLetter(userNo, letterNo);
@@ -145,8 +139,7 @@ class LetterController {
   // 감동 메세지 보내기
   postThankMsg = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const { letterNo } = req.body;
       const { thankMsg } = req.body;
 
@@ -165,8 +158,7 @@ class LetterController {
   // 임시저장 편지 불러오기
   getLetterTmp = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const letterNo = req.params.letter_no;
 
       const letterTmp = await this.letterService.getLetterTmp(userNo, letterNo);

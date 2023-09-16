@@ -6,8 +6,7 @@ class LetterController {
   // 서랍 내 편지함 갯수 조회
   getLetterCnt = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const status = 1;
 
       const letterCnt = await this.myService.getLetterCnt(userNo, status);
@@ -21,8 +20,7 @@ class LetterController {
   // 서랍 내 임시저장 갯수 조회
   getLetterTmpCnt = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const status = 0;
 
       const postWishCnt = await this.myService.getLetterCnt(userNo, status);
@@ -36,8 +34,7 @@ class LetterController {
   // 서랍 내 찜목록 갯수 조회
   getPostWishCnt = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
 
       const postWishCnt = await this.myService.getPostWishCnt(userNo);
 
@@ -50,8 +47,7 @@ class LetterController {
   // 내 마음온도
   getHeartTemper = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
 
       const heartTemper = await this.myService.getHeartTemper(userNo);
 
@@ -64,8 +60,7 @@ class LetterController {
   // 닉네임 변경
   changeNickname = async (req, res, next) => {
     try {
-      const user = res.locals.user;
-      const userNo = user.user_no;
+      const userNo = res.locals.user.user_no;
       const { nickname } = req.body;
 
       const requestBody = JSON.stringify(req.body);

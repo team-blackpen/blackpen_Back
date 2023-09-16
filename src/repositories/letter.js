@@ -56,7 +56,7 @@ class LetterRepository {
         await connection.query(insLetterContent, [letterNo, userNo, postNo, contents, 1, regDt]);
 
         // 편지 이미지 생성(임시저장 할때 이미지 없을 수 있음)
-        if (status == 1 && img.length > 0) {
+        if (img.length > 0) {
           for (let i = 0; i < img.length; i++) {
             const insLetterContent = `INSERT INTO tb_letter_img 
               (letter_no, user_no, post_no, letter_img_url, status, view_seq, reg_dt) 
@@ -128,7 +128,7 @@ class LetterRepository {
           VALUES (?, ?, ?, ?, ?, 1, ?);`;
         await connection.query(insLetterContent, [letterNo, userNo, postNo, contents, 1, uptDt]);
 
-        if (status == 1 && img.length > 0) {
+        if (img.length > 0) {
           // 기존의 임시 편지 이미지 삭제
           const uptLetterImg = `UPDATE tb_letter_img 
             SET status = 0 

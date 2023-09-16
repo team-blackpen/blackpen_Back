@@ -13,11 +13,14 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault("Asia/Seoul");
+const koreanTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
 
 app.use(
   morgan(function (tokens, req, res) {
-    const koreanTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    return [koreanTime, tokens.method(req, res), tokens.url(req, res), tokens.status(req, res), tokens.res(req, res, "content-length"), "-", tokens["response-time"](req, res), "ms"].join(" ");
+    // URL이 "/"인 경우 로그를 출력하지 않음
+    if (tokens.url(req, res) !== "/") {
+      return [koreanTime, tokens.method(req, res), tokens.url(req, res), tokens.status(req, res), tokens.res(req, res, "content-length"), "-", tokens["response-time"](req, res), "ms"].join(" ");
+    }
   })
 );
 

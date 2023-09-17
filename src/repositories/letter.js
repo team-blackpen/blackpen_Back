@@ -203,6 +203,30 @@ class LetterRepository {
     }
   };
 
+  // 알림톡 보낸 시간 수정
+  updateSendDt = async (letterNo, sendDt) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `UPDATE tb_letter 
+          SET send_dt = ? 
+          WHERE letter_no = ?;`;
+
+        await connection.query(query, [sendDt, letterNo]);
+
+        return;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
   // 마음온도 올리기
   plusHeart = async (userNo, temper) => {
     try {
@@ -267,7 +291,8 @@ class LetterRepository {
         const query = `SELECT L.letter_no, L.user_no, L.post_no, Li.sender, L.send_dt 
           FROM tb_letter L 
           JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
-          WHERE L.recipient_user_no = ? AND L.status = 1`;
+          WHERE L.recipient_user_no = ? AND L.status = 1 
+          ORDER BY send_dt DESC;`;
 
         let [letterList] = await connection.query(query, reUserNo);
 

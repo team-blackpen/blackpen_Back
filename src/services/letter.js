@@ -133,9 +133,11 @@ class LetterService {
           buttonInfo = JSON.stringify(buttonInfo);
           obj.body.button_1 = buttonInfo; // 버튼 정보 // JSON string
 
+          let sendDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
           // 예약 발송 설정
           if (info.reservationStatus == 1) {
             obj.body.senddate = info.reservationDt;
+            sendDt = info.reservationDt;
           }
 
           const aligoResult = await aligoapi.alimtalkSend(obj, AuthData);
@@ -147,6 +149,8 @@ class LetterService {
             const rollBackLetter = await this.letterRepository.rollBackLetter(letterNo, now); // 알림톡 실패 시 임시저장으로 다시변경
             throw new ErrorCustom(400, "알림톡 발송에 실패했습니다.");
           }
+
+          await this.letterRepository.updateSendDt(letterNo.letter_no, sendDt); // 알림톡 발송 후 발송시간 수정
         }
 
         // 마음온도 올리기

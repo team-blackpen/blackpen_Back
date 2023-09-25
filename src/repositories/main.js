@@ -87,6 +87,7 @@ class MainRepository {
         const query = `SELECT anniversary_no, date, anniversary_title, anniversary_des 
           FROM tb_anniversary 
           WHERE DATE >= ? 
+          ORDER BY DATE 
           LIMIT 1;`;
 
         let [anniversary] = await connection.query(query, [today]);

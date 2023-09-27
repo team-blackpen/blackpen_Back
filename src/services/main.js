@@ -79,11 +79,11 @@ class MainService {
     }
   };
 
-  visitLog = async (chCd, pathCd) => {
+  visitLog = async (chCd, pathCd, userNo) => {
     try {
       const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
 
-      await this.mainRepository.visitLog(chCd, pathCd, now);
+      await this.mainRepository.visitLog(chCd, pathCd, now, userNo);
 
       return;
     } catch (err) {

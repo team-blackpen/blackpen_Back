@@ -90,14 +90,16 @@ class LetterController {
   // 방문기록 로그 수집
   visitLog = async (req, res, next) => {
     try {
+      let userNo;
       const { chCd, pathCd } = req.body;
+      if (req.body.userNo) userNo = req.body.userNo;
 
       const requestBody = JSON.stringify(req.body);
       console.log(`visitLog - Request Body: ${requestBody}`);
 
-      await this.mainService.visitLog(chCd, pathCd);
+      await this.mainService.visitLog(chCd, pathCd, userNo);
 
-      res.status(200).json({ result: 0, msg: "방문기록 로그 수집 성공", data: { chCd, pathCd } });
+      res.status(200).json({ result: 0, msg: "방문기록 로그 수집 성공", data: { chCd, pathCd, userNo } });
     } catch (err) {
       console.log(err);
       next(err);

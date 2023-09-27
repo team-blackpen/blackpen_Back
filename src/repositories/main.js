@@ -130,15 +130,28 @@ class MainRepository {
   };
 
   // 방문기록 로그 수집
-  visitLog = async (chCd, pathCd, today) => {
+  visitLog = async (chCd, pathCd, today, userNo) => {
     try {
+      if (!userNo) userNo = 0;
+      const params = [chCd, pathCd, today, userNo];
+
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `INSERT INTO tb_visit_log 
-          (chCd, pathCd, reg_dt) 
-          VALUES (?, ?, ?);`;
+        const insLogQuery = `INSERT INTO tb_visit_log 
+          (chCd, pathCd, reg_dt, user_no) 
+          VALUES (?, ?, ?, ?);`;
 
-        await connection.query(query, [chCd, pathCd, today]);
+        // 회원가입이 아닌 방문로그 생성
+        if (userNo == 0) {
+          await connection.query(insLogQuery, params);
+        } else {
+          const userCheckQuery = `SELECT * FROM tb_visit_log 
+            WHERE user_no = ?;`;
+          const [userCheck] = await connection.query(userCheckQuery, userNo);
+
+          // 특정 코드를 가지고 있고, 최초 회원가입일때만 로그 생성
+          if (userCheck.length == 0) await connection.query(insLogQuery, params);
+        }
 
         return;
       } catch (err) {

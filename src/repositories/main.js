@@ -128,6 +128,30 @@ class MainRepository {
       throw err;
     }
   };
+
+  // 방문기록 로그 수집
+  visitLog = async (chCd, pathCd, today) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `INSERT INTO tb_visit_log 
+          (chCd, pathCd, reg_dt) 
+          VALUES (?, ?, ?);`;
+
+        await connection.query(query, [chCd, pathCd, today]);
+
+        return;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
 }
 
 module.exports = MainRepository;

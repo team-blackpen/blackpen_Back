@@ -78,6 +78,18 @@ class MainService {
       throw new ErrorCustom(400, "메인 선물하기 로그 수집 실패");
     }
   };
+
+  visitLog = async (chCd, pathCd) => {
+    try {
+      const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
+      await this.mainRepository.visitLog(chCd, pathCd, now);
+
+      return;
+    } catch (err) {
+      throw new ErrorCustom(400, "메인 선물하기 로그 수집 실패");
+    }
+  };
 }
 
 module.exports = MainService;

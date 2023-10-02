@@ -72,9 +72,10 @@ class PostListRepository {
       let addOrder = "";
 
       // limit이 있으면 카테고리별 조회 5개씩, 전체 조회는 10개만 조회
-      limit ? (addLimit = `LIMIT ${limit} OFFSET ${offset};`) : (addLimit = "LIMIT 10;");
+      limit ? (addLimit = `LIMIT ${limit} OFFSET ${offset}`) : (addLimit = "LIMIT 10");
       // cate 가 NEW면 생성 순서대로 보여주고 그게 아니면 랜덤으로 보여줌
-      cateNo == 1 ? (addOrder = `P.reg_dt DESC, Pc.view_seq, Pcr.view_seq`) : (addOrder = `RAND()`);
+      // cateNo == 1 ? (addOrder = `P.reg_dt DESC, Pc.view_seq, Pcr.view_seq`) : (addOrder = `RAND()`);
+      addOrder = `P.reg_dt DESC, Pc.view_seq, Pcr.view_seq`;
 
       const connection = await pool.getConnection(async (corn) => corn);
       try {

@@ -39,6 +39,7 @@ class PostListService {
 
     const postObj = await this.postListRepository.allPost(cateNo, limit, offset);
     let posts = postObj.posts;
+    posts.sort(() => Math.random() - 0.5);
 
     if (posts.length > 0) {
       for (let i in posts) {

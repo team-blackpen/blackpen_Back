@@ -83,71 +83,74 @@ class AdminRepository {
         // 편지지 생성
         const insPost = `INSERT INTO tb_post 
           (post_title, post_description, status, reg_dt) 
-          VALUES (?, ?, 1, ?);`;
+          VALUES (?, ?, ?, ?);`;
 
-        const [post] = await connection.query(insPost, [postData.post_title, postData.post_description, postData.regDt]);
+        const [post] = await connection.query(insPost, [postData.postTitle, postData.postDescription, postData.status, postData.regDt]);
         const postNo = post.insertId;
 
-        // 편지지 작가 관계
-        const insPostArtRel = `INSERT INTO tb_post_artist_rel 
-          (artist_no, post_no) 
-          VALUES (?, ?);`;
+        // 비공개 편지지가 아닐때 작가, 카테고리, 해시태그 등록
+        if (postData.status != 2) {
+          // 편지지 작가 관계
+          const insPostArtRel = `INSERT INTO tb_post_artist_rel 
+            (artist_no, post_no) 
+            VALUES (?, ?);`;
 
-        await connection.query(insPostArtRel, [postData.artist_no, postNo]);
+          await connection.query(insPostArtRel, [postData.artistNo, postNo]);
 
-        // 편지지 카테고리 관계
-        if (postData.post_cate_no.length > 0) {
-          for (let i in postData.post_cate_no) {
-            const insPostCateRel = `INSERT INTO tb_post_cate_rel 
-              (post_cate_no, post_no, view_seq, status, reg_dt)
-              VALUES (?, ?, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_cate_rel Pcr WHERE post_cate_no = ?), 1, ?);`;
-            await connection.query(insPostCateRel, [postData.post_cate_no[i], postNo, postData.post_cate_no[i], postData.regDt]);
+          // 편지지 카테고리 관계
+          if (postData.postCateNo.length > 0) {
+            for (let i in postData.postCateNo) {
+              const insPostCateRel = `INSERT INTO tb_post_cate_rel 
+                (post_cate_no, post_no, view_seq, status, reg_dt)
+                VALUES (?, ?, (SELECT IFNULL(MAX(view_seq) + 1, 0) FROM tb_post_cate_rel Pcr WHERE post_cate_no = ?), 1, ?);`;
+              await connection.query(insPostCateRel, [postData.postCateNo[i], postNo, postData.postCateNo[i], postData.regDt]);
+            }
           }
-        }
 
-        // 해쉬태그
-        if (postData.hashtag.length > 0) {
-          for (let i in postData.hashtag) {
-            const insHash = `INSERT INTO tb_post_hashtag 
-              (post_no, hashtag_title, status, view_seq, reg_dt) 
-              VALUES (?, ?, 1, ?, ?);`;
-            await connection.query(insHash, [postNo, postData.hashtag[i].hashtag_title, i, postData.regDt]);
+          // 해쉬태그
+          if (postData.hashtag.length > 0) {
+            for (let i in postData.hashtag) {
+              const insHash = `INSERT INTO tb_post_hashtag 
+                (post_no, hashtag_title, status, view_seq, reg_dt) 
+                VALUES (?, ?, 1, ?, ?);`;
+              await connection.query(insHash, [postNo, postData.hashtag[i].hashtagTitle, i, postData.regDt]);
+            }
           }
         }
 
         // 원본이미지
-        if (postData.post_img.length > 0) {
-          for (let i in postData.post_img) {
+        if (postData.postImg.length > 0) {
+          for (let i in postData.postImg) {
             const insImg = `INSERT INTO tb_post_img 
               (post_no, img_url, status, view_seq, reg_dt) 
               VALUES (?, ?, 1, ?, ?);`;
-            await connection.query(insImg, [postNo, postData.post_img[i].img_url, i, postData.regDt]);
+            await connection.query(insImg, [postNo, postData.postImg[i].imgUrl, i, postData.regDt]);
           }
         }
 
         // 상세이미지
-        if (postData.post_detail_img.length > 0) {
-          for (let i in postData.post_detail_img) {
+        if (postData.postDetailImg.length > 0) {
+          for (let i in postData.postDetailImg) {
             const insDetailImg = `INSERT INTO tb_post_detail_img 
               (post_no, img_url, status, view_seq, reg_dt) 
               VALUES (?, ?, 1, ?, ?);`;
-            await connection.query(insDetailImg, [postNo, postData.post_detail_img[i].img_url, i, postData.regDt]);
+            await connection.query(insDetailImg, [postNo, postData.postDetailImg[i].imgUrl, i, postData.regDt]);
           }
         }
 
         // 미리보기이미지
-        if (postData.post_preview_img.length > 0) {
-          for (let i in postData.post_preview_img) {
+        if (postData.postPreviewImg.length > 0) {
+          for (let i in postData.postPreviewImg) {
             const insDetailImg = `INSERT INTO tb_post_preview_img 
               (post_no, img_url, status, view_seq, reg_dt) 
               VALUES (?, ?, 1, ?, ?);`;
-            await connection.query(insDetailImg, [postNo, postData.post_preview_img[i].img_url, i, postData.regDt]);
+            await connection.query(insDetailImg, [postNo, postData.postPreviewImg[i].imgUrl, i, postData.regDt]);
           }
         }
 
         await connection.commit(); // 커밋
 
-        return;
+        return postNo;
       } catch (err) {
         console.log("Query Error!", err.sqlMessage);
         await connection.rollback(); // 롤백

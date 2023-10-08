@@ -33,13 +33,16 @@ class AdminController {
   creatPost = async (req, res, next) => {
     try {
       const postData = req.body;
+      postData.userNo = res.locals.user.user_no;
 
-      if (postData) {
-        await this.adminService.creatPost(postData);
+      const requestBody = JSON.stringify(req.body);
+      console.log(`creatLetter -  userNo: ${postData.userNo} / Request Body: ${requestBody}`);
 
-        return res.status(200).json({ result: 0, msg: "편지지 템플릿 등록" });
-      }
-      return res.status(400).json({ result: 1, errMsg: "편지지 템플릿 등록 실패" });
+      const newPost = await this.adminService.creatPost(postData);
+
+      const data = { postNo: newPost };
+
+      res.status(200).json({ result: 0, msg: "편지지 템플릿 등록", data });
     } catch (err) {
       next(err);
     }

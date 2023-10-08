@@ -3,6 +3,31 @@ const dbConfig = require("../config/dbconfig");
 const pool = mysql.createPool(dbConfig);
 
 class AdminRepository {
+  // 사용 중인 카테고리 조회(view_seq != 0 NEW 제외)
+  getAdminCate = async () => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT post_cate_no, cate_title
+          FROM tb_post_cate 
+          WHERE status = 1 AND view_seq > 0
+          ORDER BY view_seq;`;
+
+        let [results] = await connection.query(query);
+
+        return results;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
   findArtist = async (atristName) => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);

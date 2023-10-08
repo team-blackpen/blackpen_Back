@@ -6,6 +6,12 @@ const AdminRepository = require("../repositories/admin");
 class AdminService {
   adminRepository = new AdminRepository();
 
+  adminCate = async () => {
+    const cateList = await this.adminRepository.getAdminCate();
+
+    return cateList;
+  };
+
   creatArtist = async (atristName) => {
     const findArtist = await this.adminRepository.findArtist(atristName);
 

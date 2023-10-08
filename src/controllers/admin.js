@@ -3,6 +3,18 @@ const AdminService = require("../services/admin");
 class AdminController {
   adminService = new AdminService();
 
+  adminCate = async (req, res, next) => {
+    try {
+      const allCategory = await this.adminService.adminCate();
+
+      const data = { categoryList: allCategory };
+
+      res.status(200).json({ result: 0, msg: "카테고리 항목 조회", data });
+    } catch (err) {
+      next(err);
+    }
+  };
+
   creatArtist = async (req, res, next) => {
     try {
       const atristName = req.body.artist_name;

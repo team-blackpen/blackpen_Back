@@ -85,7 +85,7 @@ class PostListRepository {
           A.artist_no, A.artist_name 
           FROM tb_post P 
           JOIN tb_post_img Pi ON Pi.post_no = P.post_no AND Pi.view_seq = 0 
-          JOIN tb_post_cate_rel Pcr ON Pcr.post_no = P.post_no 
+          JOIN tb_post_cate_rel Pcr ON Pcr.post_no = P.post_no AND Pcr.status = 1 
           JOIN tb_post_cate Pc ON Pc.post_cate_no = Pcr.post_cate_no AND Pc.post_cate_no = ? 
           JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no 
           JOIN tb_artist A ON A.artist_no = Ar.artist_no 

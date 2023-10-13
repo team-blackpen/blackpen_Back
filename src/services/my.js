@@ -18,6 +18,7 @@ class MainService {
       const getLetterCnt = await this.myRepository.getLetterCnt(userNo, status, yesterday);
       return getLetterCnt;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "내 편지함 / 임시저장 갯수 조회 실패");
     }
   };
@@ -27,6 +28,7 @@ class MainService {
       const getPostWishCnt = await this.myRepository.getPostWishCnt(userNo);
       return getPostWishCnt;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "내 찜목록 갯수 조회 실패");
     }
   };
@@ -36,6 +38,7 @@ class MainService {
       const getHeartTemper = await this.myRepository.getHeartTemper(userNo);
       return getHeartTemper;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "내 마음온도 조회 실패");
     }
   };
@@ -47,6 +50,7 @@ class MainService {
       const changeNickname = await this.myRepository.changeNickname(userNo, nickname, now);
       return changeNickname;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "닉네임 변경 실패");
     }
   };

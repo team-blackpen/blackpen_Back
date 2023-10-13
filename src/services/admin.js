@@ -12,6 +12,7 @@ class AdminService {
 
       return cateList;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "카테고리 항목 조회 실패");
     }
   };
@@ -26,6 +27,7 @@ class AdminService {
         return;
       } else throw new ErrorCustom(400, "이미 작가가 존재합니다.");
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "작가 등록 실패");
     }
   };
@@ -44,6 +46,7 @@ class AdminService {
 
       return post;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "편지지 템플릿 등록 실패");
     }
   };

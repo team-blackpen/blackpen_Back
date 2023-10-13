@@ -162,7 +162,8 @@ class LetterService {
 
       return letterNo;
     } catch (err) {
-      throw err;
+      if (err.code == 400) throw err;
+      throw new ErrorCustom(400, "편지 작성 실패");
     }
   };
 
@@ -180,6 +181,7 @@ class LetterService {
 
       return letterList;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "편지 보관함 조회 실패");
     }
   };
@@ -191,6 +193,7 @@ class LetterService {
       const letterTmpList = await this.letterRepository.getLetterTmpList(userNo, yesterday);
       return letterTmpList;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "임시 편지 보관함 조회 실패");
     }
   };
@@ -200,6 +203,7 @@ class LetterService {
       const deleteLetter = await this.letterRepository.deleteLetter(userNo, letterList, tmp);
       return deleteLetter;
     } catch (err) {
+      if (err.code == 400) throw err;
       if (tmp) {
         throw new ErrorCustom(400, "임시 편지 삭제 실패");
       } else {
@@ -223,7 +227,8 @@ class LetterService {
 
       return getLetter;
     } catch (err) {
-      throw err;
+      if (err.code == 400) throw err;
+      throw new ErrorCustom(400, "편지 조회 실패");
     }
   };
 
@@ -243,7 +248,8 @@ class LetterService {
 
       return;
     } catch (err) {
-      throw err;
+      if (err.code == 400) throw err;
+      throw new ErrorCustom(400, "감동 메세지 보내기 실패");
     }
   };
 
@@ -252,6 +258,7 @@ class LetterService {
       const letterTmp = await this.letterRepository.getLetterTmp(userNo, letterNo);
       return letterTmp;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "임시저장 편지 조회 실패");
     }
   };
@@ -261,6 +268,7 @@ class LetterService {
       const getFont = await this.letterRepository.getFont(limit, offset);
       return getFont;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "폰트 조회 실패");
     }
   };

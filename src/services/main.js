@@ -16,6 +16,7 @@ class MainService {
       const getLetterListCnt = await this.mainRepository.getLetterListCnt(userNo);
       return getLetterListCnt;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "메인 새로운 편지 카운트 조회 실패");
     }
   };
@@ -27,6 +28,7 @@ class MainService {
       const getLetterTmpList = await this.mainRepository.getLetterTmpList(userNo, yesterday);
       return getLetterTmpList;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "메인 임시편지 리스트 3개 조회 실패");
     }
   };
@@ -41,6 +43,7 @@ class MainService {
 
       return quote;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "메인 글귀 랜덤 조회 실패");
     }
   };
@@ -51,6 +54,7 @@ class MainService {
 
       return quoteList;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "메인 글귀 리스트 조회 실패");
     }
   };
@@ -63,6 +67,7 @@ class MainService {
 
       return anniversary;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "메인 기념일 조회 실패");
     }
   };
@@ -75,6 +80,7 @@ class MainService {
 
       return;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "메인 선물하기 로그 수집 실패");
     }
   };
@@ -87,6 +93,7 @@ class MainService {
 
       return;
     } catch (err) {
+      if (err.code == 400) throw err;
       throw new ErrorCustom(400, "메인 선물하기 로그 수집 실패");
     }
   };

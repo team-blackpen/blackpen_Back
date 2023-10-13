@@ -1,3 +1,4 @@
+const ErrorCustom = require("../middlewares/errorCustom");
 const AdminService = require("../services/admin");
 
 class AdminController {
@@ -37,6 +38,29 @@ class AdminController {
 
       const requestBody = JSON.stringify(req.body);
       console.log(`creatLetter -  userNo: ${postData.userNo} / Request Body: ${requestBody}`);
+
+      // 비공개 편지지 등록 시 제목과 설명 추가
+      if (postData.status == 2) {
+        postData.postTitle = "비공개 편지지";
+        postData.postDescription = `${postData.userNo}의 비공개 편지지`;
+      }
+
+      // 공개 편지지 등록시 유효성 검사
+      if (postData.status == 3) {
+        if (!postData.artistNo) throw new ErrorCustom(400, "작가 정보가 없습니다");
+
+        if (postData.postCateNo.length > 2) throw new ErrorCustom(400, "카테고리는 2개까지 설정 가능합니다");
+        postData.postCateNo.push(1); // NEW 카테고리 자동 추가
+
+        if (postData.hashtag.length > 2) throw new ErrorCustom(400, "해시태그는 2개까지 설정 가능합니다");
+
+        for (let i in postData.hashtag) {
+          if (postData.hashtag[i].hashtagTitle.length > 3) throw new ErrorCustom(400, "해시태그는 3글자 이내 까지 설정 가능합니다");
+        }
+
+        if (postData.postImg.length < 1) throw new ErrorCustom(400, "편지지 원본 이미지가 없습니다");
+        if (postData.postPreviewImg.length < 1) throw new ErrorCustom(400, "편지지 미리보기 이미지가 없습니다");
+      }
 
       const newPost = await this.adminService.creatPost(postData);
 

@@ -36,12 +36,6 @@ class AdminService {
     try {
       postData.regDt = dayjs().format("YYYY-MM-DD HH:mm:ss");
 
-      if (postData.status == 2) {
-        postData.postTitle = "비공개 편지지";
-        postData.postDescription = `${postData.userNo}의 비공개 편지지`;
-      }
-      console.log("🚀 ~ file: admin.js:21 ~ AdminService ~ creatPost= ~ postData:", postData);
-
       const post = await this.adminRepository.insPost(postData);
 
       return post;

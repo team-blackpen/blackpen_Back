@@ -32,7 +32,7 @@ class AdminRepository {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
-        const query = `SELECT * 
+        const query = `SELECT artist_name 
           FROM tb_artist 
           WHERE artist_name = ?;`;
 
@@ -51,17 +51,41 @@ class AdminRepository {
     }
   };
 
-  creatArtist = async (atristName) => {
+  findArtistUser = async (userNo) => {
+    try {
+      const connection = await pool.getConnection(async (corn) => corn);
+      try {
+        const query = `SELECT user_no 
+          FROM tb_artist 
+          WHERE user_no = ?;`;
+
+        let [result] = await connection.query(query, [userNo]);
+
+        return result;
+      } catch (err) {
+        console.log("Query Error!", err.sqlMessage);
+        throw err;
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.log("DB ERROR!");
+      throw err;
+    }
+  };
+
+  creatArtist = async (atristName, atristDescription, userNo) => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `INSERT INTO tb_artist 
-          (artist_name) 
-          VALUES (?);`;
+          (artist_name, artist_description, user_no) 
+          VALUES (?, ?, ?);`;
 
-        await connection.query(query, [atristName]);
+        const [artist] = await connection.query(query, [atristName, atristDescription, userNo]);
+        let artistNo = artist.insertId;
 
-        return;
+        return artistNo;
       } catch (err) {
         console.log("Query Error!", err.sqlMessage);
         throw err;

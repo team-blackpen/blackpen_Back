@@ -18,12 +18,18 @@ class AdminController {
 
   creatArtist = async (req, res, next) => {
     try {
-      const atristName = req.body.artist_name;
+      const atristName = req.body.artistName;
+      const atristDescription = req.body.atristDescription;
+      let userNo = res.locals.user.user_no;
+
+      const requestBody = JSON.stringify(req.body);
+      console.log(`creatArtist -  userNo: ${userNo} / Request Body: ${requestBody}`);
 
       if (atristName) {
-        await this.adminService.creatArtist(atristName);
+        const artistNo = await this.adminService.creatArtist(atristName, atristDescription, userNo);
+        let data = { artistNo, atristName };
 
-        return res.status(200).json({ result: 0, msg: "작가 등록" });
+        return res.status(200).json({ result: 0, msg: "작가 등록", data });
       }
       return res.status(400).json({ result: 1, errMsg: "작가 등록 실패" });
     } catch (err) {
@@ -37,7 +43,7 @@ class AdminController {
       postData.userNo = res.locals.user.user_no;
 
       const requestBody = JSON.stringify(req.body);
-      console.log(`creatLetter -  userNo: ${postData.userNo} / Request Body: ${requestBody}`);
+      console.log(`creatPost -  userNo: ${postData.userNo} / Request Body: ${requestBody}`);
 
       // 비공개 편지지 등록 시 제목과 설명 추가
       if (postData.status == 2) {

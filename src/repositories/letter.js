@@ -284,17 +284,17 @@ class LetterRepository {
   };
 
   // 받은편지함 조회
-  getLetterList = async (reUserNo) => {
+  getLetterList = async (reUserNo, now) => {
     try {
       const connection = await pool.getConnection(async (corn) => corn);
       try {
         const query = `SELECT L.letter_no, L.user_no, L.post_no, Li.sender, L.send_dt 
           FROM tb_letter L 
           JOIN tb_letter_info Li ON L.letter_no = Li.letter_no 
-          WHERE L.recipient_user_no = ? AND L.status = 1 
+          WHERE L.recipient_user_no = ? AND L.status = 1 AND L.send_dt <= ? 
           ORDER BY send_dt DESC;`;
 
-        let [letterList] = await connection.query(query, reUserNo);
+        let [letterList] = await connection.query(query, [reUserNo, now]);
 
         if (letterList.length > 0) {
           for (let i in letterList) {

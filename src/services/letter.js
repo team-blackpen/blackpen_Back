@@ -169,7 +169,9 @@ class LetterService {
 
   getLetterList = async (reUserNo) => {
     try {
-      let letterList = await this.letterRepository.getLetterList(reUserNo);
+      const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
+      let letterList = await this.letterRepository.getLetterList(reUserNo, now);
 
       let newLetterList = await this.letterRepository.getNewLetterList(reUserNo);
       newLetterList = newLetterList.map((item) => item.letter_no);

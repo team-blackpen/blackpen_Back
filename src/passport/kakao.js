@@ -45,9 +45,10 @@ module.exports = () => {
           const connection = await pool.getConnection(async (corn) => corn);
           try {
             await connection.beginTransaction(); // 트랜잭션 적용 시작
-            const query = `SELECT U.user_no, Up.nickname, Up.user_img_url 
+            const query = `SELECT U.user_no, Up.nickname, Up.user_img_url, A.artist_no, A.artist_name 
               FROM tb_user U 
               JOIN tb_user_profile Up ON Up.user_no = U.user_no 
+              LEFT JOIN tb_artist A ON A.user_no = U.user_no 
               WHERE social_id = ? AND login_type = ?`;
 
             let [user] = await connection.query(query, [profile.id, profile.provider]);

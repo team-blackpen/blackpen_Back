@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const ErrorCustom = require("../middlewares/errorCustom");
 const AdminService = require("../services/admin");
 
@@ -21,15 +22,19 @@ class AdminController {
       const atristName = req.body.artistName;
       const atristDescription = req.body.atristDescription;
       let userNo = res.locals.user.user_no;
+      let nickname = res.locals.user.nickname;
+      let user_img_url = res.locals.user.user_img_url;
 
       const requestBody = JSON.stringify(req.body);
       console.log(`creatArtist -  userNo: ${userNo} / Request Body: ${requestBody}`);
 
       if (atristName) {
         const artistNo = await this.adminService.creatArtist(atristName, atristDescription, userNo);
-        let data = { artistNo, atristName };
 
-        return res.status(200).json({ result: 0, msg: "작가 등록", data });
+        const accessToken = jwt.sign({ user_no: userNo, nickname: nickname, user_img_url: user_img_url, artist_no: artistNo, artist_name: atristName }, process.env.JWT_KEY, { expiresIn: "3h" });
+
+        let result = { user_no: userNo, accessToken, nickname, user_img_url, artist_no: artistNo, artist_name: atristName };
+        return res.status(200).json({ result: 0, msg: "작가 등록", data: result });
       }
       return res.status(400).json({ result: 1, errMsg: "작가 등록 실패" });
     } catch (err) {

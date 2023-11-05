@@ -49,7 +49,7 @@ module.exports = () => {
               FROM tb_user U 
               JOIN tb_user_profile Up ON Up.user_no = U.user_no 
               LEFT JOIN tb_artist A ON A.user_no = U.user_no 
-              WHERE social_id = ? AND login_type = ?`;
+              WHERE social_id = ? AND U.login_type = ?`;
 
             let [user] = await connection.query(query, [profile.id, profile.provider]);
 

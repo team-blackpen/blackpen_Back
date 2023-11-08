@@ -24,9 +24,16 @@ app.use(
   })
 );
 
-const domains = ["http://localhost:3000", "https://jeonhada-xoqca.run.goorm.site"];
+const domains = process.env.DOMAIN;
 const corsOptions = {
-  origin: "*",
+  origin: function (origin, callback) {
+    if (domains.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log("cors origin : ", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true, // 사용자 인증이 필요한 리소스(쿠키 ..등) 접근
 };
 app.use(cors(corsOptions));

@@ -51,7 +51,7 @@ class PostRepository {
           query = `SELECT Ph.post_hashtag_no, Ph.hashtag_title 
             FROM tb_post P 
             JOIN tb_post_hashtag Ph ON Ph.post_no = P.post_no AND Ph.status = 1 
-            WHERE P.post_no = ? AND P.status = 1 
+            WHERE P.post_no = ? AND P.status IN (1, 2, 3) 
             ORDER BY Ph.view_seq;`;
           break;
 
@@ -59,7 +59,7 @@ class PostRepository {
           query = `SELECT Pi.post_img_no, Pi.img_url 
           FROM tb_post P
           JOIN tb_post_img Pi ON Pi.post_no = P.post_no AND Pi.status = 1
-          WHERE P.post_no = ? AND P.status = 1
+          WHERE P.post_no = ? AND P.status IN (1, 2, 3) 
           ORDER BY Pi.view_seq;`;
           break;
 
@@ -67,7 +67,7 @@ class PostRepository {
           query = `SELECT Pdi.post_detail_img_no, Pdi.img_url 
           FROM tb_post P
           JOIN tb_post_detail_img Pdi ON Pdi.post_no = P.post_no AND Pdi.status = 1
-          WHERE P.post_no = ? AND P.status = 1
+          WHERE P.post_no = ? AND P.status IN (1, 2, 3) 
           ORDER BY Pdi.view_seq;`;
           break;
 
@@ -75,7 +75,7 @@ class PostRepository {
           query = `SELECT Ppi.post_preview_img_no, Ppi.img_url 
           FROM tb_post P
           JOIN tb_post_preview_img Ppi ON Ppi.post_no = P.post_no AND Ppi.status = 1
-          WHERE P.post_no = ? AND P.status = 1
+          WHERE P.post_no = ? AND P.status IN (1, 2, 3) 
           ORDER BY Ppi.view_seq;`;
           break;
 

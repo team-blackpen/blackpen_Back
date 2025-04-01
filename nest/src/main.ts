@@ -1,18 +1,9 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  // AppModule을 기반으로 Nest 애플리케이션 생성
   const app = await NestFactory.create(AppModule);
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // DTO에 정의된 값만 허용
-      forbidNonWhitelisted: true, // 정의되지 않은 값이 들어오면 에러
-      transform: true, // string → number 자동 변환 등
-    }),
-  );
-
-  await app.listen(3000);
+  await app.listen(3000); // 포트 3000에서 애플리케이션 실행
 }
 bootstrap();

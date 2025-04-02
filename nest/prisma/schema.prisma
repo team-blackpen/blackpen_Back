@@ -216,11 +216,13 @@ model tb_thank_msg {
 }
 
 model tb_user {
-  user_no      Int       @id @default(autoincrement())
-  social_id    String?   @db.VarChar(45)
-  access_token String?   @db.VarChar(500)
-  login_type   String?   @db.VarChar(45)
-  reg_dt       DateTime? @db.DateTime(0)
+  user_no          Int              @id @default(autoincrement())
+  social_id        String?          @db.VarChar(45)
+  access_token     String?          @db.VarChar(500)
+  login_type       String?          @db.VarChar(45)
+  reg_dt           DateTime?        @db.DateTime(0)
+
+  tb_user_profile  tb_user_profile?
 }
 
 model tb_user_profile {
@@ -236,6 +238,8 @@ model tb_user_profile {
   birth_year   String?   @db.VarChar(10)
   birthday     String?   @db.VarChar(10)
   upt_dt       DateTime? @db.DateTime(0)
+
+  tb_user tb_user @relation(fields: [user_no], references: [user_no])
 }
 
 model tb_visit_log {

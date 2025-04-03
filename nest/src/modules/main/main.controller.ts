@@ -1,6 +1,7 @@
 import {
-  Controller,
   SetMetadata,
+  BadRequestException,
+  Controller,
   Get,
   UseGuards,
   Post,
@@ -52,6 +53,8 @@ export class MainController {
   @Get('quote')
   async getQuote() {
     const quote = await this.mainService.getQuote();
+
+    // throw new BadRequestException('잘못된 요청입니다.');
 
     return quote;
   }

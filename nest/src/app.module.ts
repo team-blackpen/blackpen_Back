@@ -4,6 +4,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 import { QuoteModule } from './modules/quote/quote.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { MainModule } from './modules/main/main.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthModule } from './modules/auth/auth.module';
     UserModule, // 사용자 관련 기능을 제공하는 모듈
     QuoteModule, // 명언 관련 기능을 제공하는 모듈
     AuthModule,
+    MainModule,
   ],
 })
 export class AppModule {}

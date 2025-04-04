@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
+
 import { PrismaService } from '@/prisma/prisma.service';
 import * as dayjs from 'dayjs';
+
+import { TmpLetter } from './interfaces/tmp-letter.interface';
+import { Quote } from './interfaces/quote.interface';
+import { Anniversary } from './interfaces/anniversary.interface';
 
 @Injectable()
 export class MainService {
@@ -24,7 +29,7 @@ export class MainService {
   }
 
   // 임시 편지 리스트 조회 (최근 1일 이내, 최대 3개)
-  async getLetterTmpList(userNo: number) {
+  async getLetterTmpList(userNo: number): Promise<TmpLetter[]> {
     const yesterday = dayjs()
       .subtract(300, 'day')
       .format('YYYY-MM-DD HH:mm:ss');
@@ -49,8 +54,8 @@ export class MainService {
   }
 
   // 랜덤 글귀 조회 (1개)
-  async getQuote() {
-    const list = await this.getQuoteList(); // 중복 제거 👇
+  async getQuote(): Promise<Quote | null> {
+    const list = await this.getQuoteList();
     if (!list.length) return null;
 
     const random = Math.floor(Math.random() * list.length);
@@ -59,7 +64,7 @@ export class MainService {
   }
 
   // 전체 글귀 리스트 조회
-  async getQuoteList() {
+  async getQuoteList(): Promise<Quote[]> {
     return await this.prisma.tb_quote.findMany({
       where: { status: 1 },
       select: {
@@ -72,7 +77,7 @@ export class MainService {
   }
 
   // 다가오는 기념일 조회
-  async getAnniversary() {
+  async getAnniversary(): Promise<Anniversary | null> {
     const today = parseInt(dayjs().format('YYYYMMDD'), 10);
 
     const anniversary = await this.prisma.tb_anniversary.findFirst({

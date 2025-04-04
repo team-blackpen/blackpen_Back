@@ -1,0 +1,251 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tb_anniversary {
+  anniversary_no    Int     @id @default(autoincrement())
+  date              Int?
+  anniversary_title String? @db.VarChar(45)
+  anniversary_des   String? @db.VarChar(200)
+}
+
+model tb_artist {
+  artist_no          Int     @id @default(autoincrement())
+  user_no            Int?
+  artist_name        String? @db.VarChar(45)
+  artist_description String? @db.VarChar(100)
+  artist_phone       String? @db.VarChar(45)
+  artist_insta       String? @db.VarChar(100)
+  login_type         Int?    @db.TinyInt
+  artist_id          String? @db.VarChar(45)
+  artist_pw          String? @db.VarChar(255)
+}
+
+model tb_font {
+  font_no        Int       @id @default(autoincrement())
+  font_title     String?   @db.VarChar(100)
+  font_url       String?   @db.VarChar(100)
+  font_title_eng String?   @db.VarChar(100)
+  font_img_url   String?   @db.VarChar(255)
+  status         Int?      @db.TinyInt
+  view_seq       Int?
+  reg_dt         DateTime? @db.DateTime(0)
+}
+
+model tb_gift_log {
+  gift_log_no Int       @id @default(autoincrement())
+  user_no     Int?
+  gift_price  Int?
+  reg_dt      DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_letter {
+  letter_no         Int       @id @default(autoincrement())
+  user_no           Int
+  post_no           Int
+  status            Int?      @db.TinyInt
+  stage             Int?
+  recipient_user_no Int?
+  url               String?   @db.VarChar(500)
+  reg_dt            DateTime? @db.DateTime(0)
+  upt_dt            DateTime? @db.DateTime(0)
+  expired_dt        DateTime? @db.DateTime(0)
+  send_dt           DateTime? @db.DateTime(0)
+  send_status       Int?      @db.TinyInt
+  hash_no           String?   @db.VarChar(500)
+}
+
+model tb_letter_contents {
+  letter_contents_no Int       @id @default(autoincrement())
+  letter_no          Int
+  user_no            Int
+  post_no            Int
+  letter_contents    String?   @db.MediumText
+  page_no            Int?      @db.TinyInt
+  status             Int?      @db.TinyInt
+  reg_dt             DateTime? @db.DateTime(0)
+}
+
+model tb_letter_img {
+  letter_img_no  Int       @id @default(autoincrement())
+  letter_no      Int
+  user_no        Int
+  post_no        Int
+  letter_img_url String?   @db.VarChar(500)
+  status         Int?      @db.TinyInt
+  view_seq       Int?      @db.TinyInt
+  reg_dt         DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tb_letter_info {
+  letter_no          Int       @id @default(autoincrement())
+  user_no            Int
+  post_no            Int
+  font_no            Int?
+  font_size          Int?      @db.TinyInt
+  page_cnt           Int?      @db.TinyInt
+  recipient          String?   @db.VarChar(45)
+  recipient_phone    String?   @db.VarChar(45)
+  sender             String?   @db.VarChar(45)
+  sender_phone       String?   @db.VarChar(45)
+  reservation_status Int?      @db.TinyInt
+  reservation_dt     DateTime? @db.DateTime(0)
+}
+
+model tb_letter_read_log {
+  letter_read_log_no Int       @id @default(autoincrement())
+  letter_no          Int
+  user_no            Int
+  post_no            Int
+  recipient_user_no  Int?
+  read_dt            DateTime? @db.DateTime(0)
+}
+
+model tb_post {
+  post_no          Int       @id @default(autoincrement())
+  post_title       String?   @db.VarChar(100)
+  post_description String?   @db.VarChar(500)
+  status           Int?      @db.TinyInt
+  reg_dt           DateTime? @db.DateTime(0)
+}
+
+model tb_post_artist_rel {
+  post_artist_rel_no Int @id @default(autoincrement())
+  artist_no          Int
+  post_no            Int
+}
+
+model tb_post_cate {
+  post_cate_no   Int       @id @default(autoincrement())
+  cate_title     String?   @db.VarChar(45)
+  cate_eng_title String?   @db.VarChar(45)
+  cate_img_url   String?   @db.VarChar(500)
+  view_seq       Int?      @db.TinyInt
+  status         Int?      @db.TinyInt
+  reg_dt         DateTime? @db.DateTime(0)
+}
+
+model tb_post_cate_rel {
+  post_cate_rel_no Int       @id @default(autoincrement())
+  post_cate_no     Int
+  post_no          Int
+  view_seq         Int?
+  status           Int?      @db.TinyInt
+  reg_dt           DateTime? @db.DateTime(0)
+}
+
+model tb_post_detail_img {
+  post_detail_img_no Int       @id @default(autoincrement())
+  post_no            Int
+  img_url            String?   @db.VarChar(500)
+  view_seq           Int?      @db.TinyInt
+  status             Int?      @db.TinyInt
+  reg_dt             DateTime? @db.DateTime(0)
+}
+
+model tb_post_hashtag {
+  post_hashtag_no Int       @id @default(autoincrement())
+  post_no         Int
+  hashtag_title   String?   @db.VarChar(45)
+  status          Int?      @db.TinyInt
+  view_seq        Int?      @db.TinyInt
+  reg_dt          DateTime? @db.DateTime(0)
+}
+
+model tb_post_img {
+  post_img_no Int       @id @default(autoincrement())
+  post_no     Int
+  img_url     String?   @db.VarChar(1000)
+  view_seq    Int?      @db.TinyInt
+  status      Int?      @db.TinyInt
+  reg_dt      DateTime? @db.DateTime(0)
+}
+
+model tb_post_preview_img {
+  post_preview_img_no Int       @id @default(autoincrement())
+  post_no             Int
+  img_url             String?   @db.VarChar(1000)
+  view_seq            Int?      @db.TinyInt
+  status              Int?      @db.TinyInt
+  reg_dt              DateTime? @db.DateTime(0)
+}
+
+model tb_post_wish {
+  post_wish_no Int       @id @default(autoincrement())
+  user_no      Int
+  post_no      Int
+  status       Int?      @db.TinyInt
+  reg_dt       DateTime? @db.DateTime(0)
+  upt_dt       DateTime? @db.DateTime(0)
+}
+
+model tb_quote {
+  quote_no Int     @id @default(autoincrement())
+  quote    String? @db.VarChar(300)
+  author   String? @db.VarChar(45)
+  category String? @db.VarChar(10)
+  status   Int?    @db.TinyInt
+}
+
+model tb_template {
+  template_no      Int     @id @default(autoincrement())
+  template_code    String? @db.VarChar(100)
+  template_title   String? @db.VarChar(100)
+  template_msg     String? @db.MediumText
+  template_button  Json?
+  button_name      String? @db.VarChar(45)
+  button_link      String? @db.VarChar(45)
+  button_link_name String? @db.VarChar(45)
+  button_mo        String? @db.VarChar(500)
+  button_pc        String? @db.VarChar(500)
+}
+
+model tb_thank_msg {
+  thank_no  Int       @id @default(autoincrement())
+  user_no   Int?
+  letter_no Int?
+  thank_msg Int?
+  reg_dt    DateTime? @db.DateTime(0)
+}
+
+model tb_user {
+  user_no          Int              @id @default(autoincrement())
+  social_id        String?          @db.VarChar(45)
+  access_token     String?          @db.VarChar(500)
+  login_type       String?          @db.VarChar(45)
+  reg_dt           DateTime?        @db.DateTime(0)
+
+  tb_user_profile  tb_user_profile?
+}
+
+model tb_user_profile {
+  user_no      Int       @id
+  nickname     String?   @db.VarChar(45)
+  user_img_url String?   @db.VarChar(255)
+  heart_temper Decimal?  @db.Decimal(5, 1)
+  email        String?   @db.VarChar(45)
+  name         String?   @db.VarChar(20)
+  gender       String?   @db.VarChar(10)
+  user_phone   String?   @db.VarChar(45)
+  age_range    String?   @db.VarChar(10)
+  birth_year   String?   @db.VarChar(10)
+  birthday     String?   @db.VarChar(10)
+  upt_dt       DateTime? @db.DateTime(0)
+
+  tb_user tb_user @relation(fields: [user_no], references: [user_no])
+}
+
+model tb_visit_log {
+  visit_log_no Int       @id @default(autoincrement())
+  chCd         Int?
+  pathCd       Int?
+  reg_dt       DateTime? @db.DateTime(0)
+  user_no      Int?      @default(0)
+}

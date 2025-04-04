@@ -1,5 +1,11 @@
+/*
+ * 모든 API 공통 응답 DTO
+ * - result: 0이면 성공
+ * - msg: 처리 메시지
+ * - data: 응답 데이터 (선택적)
+ */
 export class CommonResponseDto<T = any> {
-  result: number; // 0: 성공, 그 외는 커스텀
+  result: number;
   msg: string;
-  data?: T; // ❗️없을 수도 있으므로 optional 처리
+  data?: T;
 }

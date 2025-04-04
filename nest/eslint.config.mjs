@@ -25,7 +25,6 @@ export default tseslint.config(
       },
     },
 
-    // ✅ 이 위치에 설정!
     parserOptions: {
       project: './tsconfig.eslint.json',
       tsconfigRootDir: new URL('.', import.meta.url).pathname,

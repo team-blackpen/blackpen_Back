@@ -1,31 +1,37 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategy/jwt.strategy';
-import { PrismaService } from '../../prisma/prisma.service';
+
 import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+
+import { JwtStrategy } from './strategy/jwt.strategy';
 import { KakaoStrategy } from './strategy/kakao.strategy';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth.guard';
 
 @Module({
   imports: [
-    PassportModule, // ✅ AuthGuard 사용에 필요
+    // Passport 기반 인증 모듈 (Guard 동작에 필요)
+    PassportModule,
+
+    // JWT 설정 모듈 (비밀키 및 만료 시간 설정)
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '30000h' },
     }),
   ],
-  providers: [
-    AuthService,
-    PrismaService,
-    KakaoStrategy, // ✅ 카카오 로그인 전략
-    JwtStrategy, // ✅ JWT 인증 전략
-    JwtAuthGuard, // ✅ 커스텀 Guard
-    OptionalJwtAuthGuard,
+  controllers: [
+    // 카카오 로그인 API 제공
+    AuthController,
   ],
-  controllers: [AuthController],
-  exports: [AuthService], // 필요 시
+  providers: [
+    // 카카오 및 JWT 인증 전략 정의
+    AuthService,
+    JwtStrategy,
+    KakaoStrategy,
+  ],
+  exports: [
+    // 다른 모듈에서 AuthService 사용 가능하게 내보냄
+    AuthService,
+  ],
 })
 export class AuthModule {}

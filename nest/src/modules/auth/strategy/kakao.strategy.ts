@@ -12,15 +12,17 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     });
   }
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: any,
-    done: Function,
-  ) {
+  /*
+   * 카카오 로그인 성공 시 호출
+   * - 사용자 존재 여부 확인 및 생성, 수정
+   * - JWT 토큰 생성
+   */
+  async validate(accessToken: string, _refreshToken: string, profile: any) {
     const kakaoAccount = profile._json.kakao_account;
+
     const kakaoId = profile.id.toString();
     const nickname = profile.displayName || kakaoAccount?.profile?.nickname;
+
     const profileImage = kakaoAccount?.profile?.profile_image_url || '';
     const email = kakaoAccount?.email || null;
     const name = kakaoAccount?.name || null;
@@ -30,7 +32,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     const birthday = kakaoAccount?.birthday || null;
     const phoneNumber = kakaoAccount?.phone_number || null;
 
-    const result = await this.authService.validateUser(
+    // 사용자 검증 (DB 조회 또는 생성, 수정)
+    const user = await this.authService.validateUser(
       kakaoId,
       nickname,
       profileImage,
@@ -44,6 +47,19 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       birthday,
     );
 
-    done(null, result);
+    const payload = {
+      user_no: user.user_no,
+      nickname: user.tb_user_profile?.nickname,
+      kakaoId,
+    };
+
+    // JWT 토큰 생성
+    const accessTokenJwt = this.authService.generateToken(payload);
+
+    return {
+      message: '카카오 로그인 성공',
+      user: payload,
+      accessToken: accessTokenJwt,
+    };
   }
 }

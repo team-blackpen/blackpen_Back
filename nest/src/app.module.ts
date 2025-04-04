@@ -1,21 +1,42 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+
 import { PrismaModule } from './prisma/prisma.module';
-import { UserModule } from './modules/user/user.module';
-import { QuoteModule } from './modules/quote/quote.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MainModule } from './modules/main/main.module';
+import { UserModule } from './modules/user/user.module';
+
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true, // 모든 모듈에서 전역 사용
-    }),
-    PrismaModule, // Prisma를 통한 데이터베이스 연결을 제공하는 모듈
-    UserModule, // 사용자 관련 기능을 제공하는 모듈
-    QuoteModule, // 명언 관련 기능을 제공하는 모듈
+    // .env 환경변수 전역 설정
+    ConfigModule.forRoot({ isGlobal: true }),
+
+    // DB 연결을 위한 Prisma 설정 모듈
+    PrismaModule,
+
+    // 인증 및 사용자 관련 모듈 (카카오 로그인 등)
     AuthModule,
+
+    // 메인 기능 관련 모듈 (글귀, 임시편지 등)
     MainModule,
+
+    UserModule, // 삭제 예정
+  ],
+  providers: [
+    // 공통 응답 인터셉터
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+    // 예외 필터 (에러 핸들링)
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
   ],
 })
 export class AppModule {}

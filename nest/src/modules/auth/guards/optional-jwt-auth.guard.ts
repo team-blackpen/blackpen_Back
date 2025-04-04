@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
+// 로그인 선택인 API에서 사용하는 Guard (토큰 없어도 통과)
 export class OptionalJwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest(err, user, info) {
-    console.log('🚀 ~ OptionalJwtAuthGuard ~ handleRequest ~ user:', user);
-    // ❌ 토큰 검증 실패 등 오류가 있어도 무시하고 null 리턴
+  handleRequest(err: any, user: any, info: any) {
+    // ❗️에러가 있거나 토큰이 없으면 그냥 null 반환
     return user ?? null;
   }
 }

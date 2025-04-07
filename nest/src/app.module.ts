@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { MainModule } from './modules/main/main.module';
 import { MyModule } from './modules/my/my.module';
 import { PostlistModule } from './modules/postlist/postlist.module';
+import { PostModule } from './modules/post/post.module';
 import { UserModule } from './modules/user/user.module';
 
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -29,7 +30,11 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
     // 마이페이지 관련 모듈 (받은 편지, 찜, 마음온도, 닉네임 변경 등)
     MyModule,
 
+    // 편지지 리스트 관련 모듈 (전체 조회, 카테고리별 조회, 찜 등)
     PostlistModule,
+
+    // 편지지 상세 관련 모듈 (상세조회 등)
+    PostModule,
 
     UserModule, // 삭제 예정
   ],

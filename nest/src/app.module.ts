@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MainModule } from './modules/main/main.module';
 import { MyModule } from './modules/my/my.module';
+import { PostlistModule } from './modules/postlist/postlist.module';
 import { UserModule } from './modules/user/user.module';
 
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -27,6 +28,8 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 
     // 마이페이지 관련 모듈 (받은 편지, 찜, 마음온도, 닉네임 변경 등)
     MyModule,
+
+    PostlistModule,
 
     UserModule, // 삭제 예정
   ],

@@ -8,6 +8,7 @@ import { MainModule } from './modules/main/main.module';
 import { MyModule } from './modules/my/my.module';
 import { PostlistModule } from './modules/postlist/postlist.module';
 import { PostModule } from './modules/post/post.module';
+import { LetterModule } from './modules/letter/letter.module';
 import { UserModule } from './modules/user/user.module';
 
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -35,6 +36,8 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 
     // 편지지 상세 관련 모듈 (상세조회 등)
     PostModule,
+
+    LetterModule,
 
     UserModule, // 삭제 예정
   ],

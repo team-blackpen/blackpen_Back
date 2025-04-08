@@ -8,5 +8,6 @@ import { AuthModule } from '@/modules/auth/auth.module';
   imports: [AuthModule], // 로그인 여부 확인
   controllers: [PostController],
   providers: [PostService, PrismaService],
+  exports: [PostService],
 })
 export class PostModule {}

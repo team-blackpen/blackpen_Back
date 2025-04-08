@@ -58,7 +58,7 @@ export class PostService {
     return result[0] ?? null;
   }
 
-  private async getPostDetailEtc(
+  public async getPostDetailEtc(
     postNo: number,
     type: 'hashtag' | 'postImg' | 'postDetailImg' | 'postPreviewImg',
   ): Promise<any[]> {

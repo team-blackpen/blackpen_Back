@@ -37,16 +37,16 @@ export class PostService {
       : '';
 
     const query = `
-        SELECT 
-            P.post_no, P.post_title, P.post_description, 
-            ${addWish}
-            A.artist_no, A.artist_name
-        FROM tb_post P 
-        JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no 
-        JOIN tb_artist A ON A.artist_no = Ar.artist_no 
-        ${joinWish}
-        WHERE 
-            P.post_no = ? AND P.status = 1;
+      SELECT 
+        P.post_no, P.post_title, P.post_description, 
+        ${addWish}
+        A.artist_no, A.artist_name
+      FROM tb_post P 
+      JOIN tb_post_artist_rel Ar ON Ar.post_no = P.post_no 
+      JOIN tb_artist A ON A.artist_no = Ar.artist_no 
+      ${joinWish}
+      WHERE 
+        P.post_no = ? AND P.status = 1;
     `;
 
     const params = userNo ? [userNo, postNo] : [postNo];
@@ -67,57 +67,57 @@ export class PostService {
         table: 'tb_post_hashtag',
         pk: 'post_hashtag_no',
         query: `
-            SELECT 
-                Ph.post_hashtag_no, Ph.hashtag_title
-            FROM tb_post P
-            JOIN tb_post_hashtag Ph ON Ph.post_no = P.post_no AND Ph.status = 1
-            WHERE 
-                P.post_no = ? 
-                AND P.status IN (1, 2, 3)
-            ORDER BY Ph.view_seq;
-            `,
+          SELECT 
+            Ph.post_hashtag_no, Ph.hashtag_title
+          FROM tb_post P
+          JOIN tb_post_hashtag Ph ON Ph.post_no = P.post_no AND Ph.status = 1
+          WHERE 
+            P.post_no = ? 
+            AND P.status IN (1, 2, 3)
+          ORDER BY Ph.view_seq;
+        `,
       },
       postImg: {
         table: 'tb_post_img',
         pk: 'post_img_no',
         query: `
-            SELECT 
-                Pi.post_img_no, Pi.img_url
-            FROM tb_post P
-            JOIN tb_post_img Pi ON Pi.post_no = P.post_no AND Pi.status = 1
-            WHERE 
-                P.post_no = ? 
-                AND P.status IN (1, 2, 3)
-            ORDER BY Pi.view_seq;
-            `,
+          SELECT 
+            Pi.post_img_no, Pi.img_url
+          FROM tb_post P
+          JOIN tb_post_img Pi ON Pi.post_no = P.post_no AND Pi.status = 1
+          WHERE 
+            P.post_no = ? 
+            AND P.status IN (1, 2, 3)
+          ORDER BY Pi.view_seq;
+        `,
       },
       postDetailImg: {
         table: 'tb_post_detail_img',
         pk: 'post_detail_img_no',
         query: `
-            SELECT 
-                Pdi.post_detail_img_no, Pdi.img_url
-            FROM tb_post P
-            JOIN tb_post_detail_img Pdi ON Pdi.post_no = P.post_no AND Pdi.status = 1
-            WHERE 
-                P.post_no = ? 
-                AND P.status IN (1, 2, 3)
-            ORDER BY Pdi.view_seq;
-            `,
+          SELECT 
+            Pdi.post_detail_img_no, Pdi.img_url
+          FROM tb_post P
+          JOIN tb_post_detail_img Pdi ON Pdi.post_no = P.post_no AND Pdi.status = 1
+          WHERE 
+            P.post_no = ? 
+            AND P.status IN (1, 2, 3)
+          ORDER BY Pdi.view_seq;
+          `,
       },
       postPreviewImg: {
         table: 'tb_post_preview_img',
         pk: 'post_preview_img_no',
         query: `
-            SELECT 
-                Ppi.post_preview_img_no, Ppi.img_url
-            FROM tb_post P
-            JOIN tb_post_preview_img Ppi ON Ppi.post_no = P.post_no AND Ppi.status = 1
-            WHERE 
-                P.post_no = ? 
-                AND P.status IN (1, 2, 3)
-            ORDER BY Ppi.view_seq;
-            `,
+          SELECT 
+            Ppi.post_preview_img_no, Ppi.img_url
+          FROM tb_post P
+          JOIN tb_post_preview_img Ppi ON Ppi.post_no = P.post_no AND Ppi.status = 1
+          WHERE 
+            P.post_no = ? 
+            AND P.status IN (1, 2, 3)
+          ORDER BY Ppi.view_seq;
+          `,
       },
     };
 

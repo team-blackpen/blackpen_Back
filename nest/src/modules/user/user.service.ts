@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new Error('사용자를 찾을 수 없습니다.');
+      throw new BadRequestException('사용자를 찾을 수 없습니다.');
     }
 
     return {

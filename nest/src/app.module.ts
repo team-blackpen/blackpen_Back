@@ -10,6 +10,7 @@ import { PostlistModule } from './modules/postlist/postlist.module';
 import { PostModule } from './modules/post/post.module';
 import { LetterModule } from './modules/letter/letter.module';
 import { UserModule } from './modules/user/user.module';
+import { AligoTestModule } from '@/modules/aligo-test/aligo-test.module';
 
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
@@ -37,9 +38,12 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
     // 편지지 상세 관련 모듈 (상세조회 등)
     PostModule,
 
+    // 편지 관련 모듈 (작성, 임시저장, 발송, 조회, 삭제 등)
     LetterModule,
 
     UserModule, // 삭제 예정
+
+    AligoTestModule, // 알림톡 테스트 용
   ],
   providers: [
     // 공통 응답 인터셉터

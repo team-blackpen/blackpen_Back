@@ -1,9 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 
 import { PostService } from '@/modules/post/post.service';
+import { AligoService } from '@/common/aligo/aligo.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import * as dayjs from 'dayjs';
+
+import { CreateLetterDto } from './dto/create-letter.dto';
 
 import { LetterListItem } from './interfaces/letter-list-item.interface';
 import { LetterTmpListItem } from './interfaces/letter-tmp-list-item.interface';
@@ -11,12 +14,17 @@ import { LetterDetailItem } from './interfaces/letter-detail-item.interface';
 import { Font } from './interfaces/letter-font.interface';
 import { LetterTmp } from './interfaces/letter-tmp-item.interface';
 import { LetterCheckResult } from './interfaces/letter-check.interface';
+import {
+  CreateNewLetterInput,
+  UpdateLetterInput,
+} from './interfaces/letter-write-param.interface';
 
 @Injectable()
 export class LetterService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly postService: PostService,
+    private readonly aligoService: AligoService,
   ) {}
 
   async getLetterList(userNo: number): Promise<LetterListItem[]> {
@@ -70,6 +78,7 @@ export class LetterService {
     return img;
   }
 
+  // 받은 편지 중 읽지 않은 편지 조회
   private async getNewLetterList(userNo: number) {
     const result: any[] = await this.prisma.$queryRaw`
       SELECT 
@@ -85,6 +94,7 @@ export class LetterService {
     return result;
   }
 
+  // 임시 저장된 편지 조회
   async getLetterTmpList(userNo: number): Promise<LetterTmpListItem[]> {
     const yesterday = dayjs()
       .subtract(300, 'day')
@@ -136,7 +146,7 @@ export class LetterService {
     letterNo?: number,
     hashLetter?: string,
   ): Promise<LetterDetailItem | null> {
-    // hashLetter가 있을 경우 게스트 없으면 유저
+    // 게스트 접근(해시) 또는 로그인 유저 접근(letter_no + user_no)
     const whereClause = hashLetter
       ? Prisma.sql`L.hash_no = ${hashLetter}`
       : Prisma.sql`L.letter_no = ${letterNo} AND L.recipient_user_no = ${userNo}`;
@@ -179,7 +189,7 @@ export class LetterService {
     limit: number,
     offset: number,
   ): Promise<{ font: Font[]; nextData: number }> {
-    const font = await this.prisma.$queryRaw<any[]>`
+    const font: Font[] = await this.prisma.$queryRaw`
       SELECT 
         font_no, font_title, font_url
       FROM tb_font
@@ -297,6 +307,7 @@ export class LetterService {
     });
   }
 
+  // 편지 리스트 삭제
   async deleteLetter(
     userNo: number,
     letterList: number[],
@@ -317,8 +328,414 @@ export class LetterService {
       where: whereClause,
       data: { status: 3 },
     });
-    console.log('🚀 ~ LetterService ~ result:', result);
+
+    if (result.count === 0) {
+      throw new BadRequestException('삭제할 편지가 없습니다.');
+    }
 
     return result.count;
+  }
+
+  // 편지 작성(임시, 일반)
+  async createLetter(userNo: number, letter: CreateLetterDto): Promise<number> {
+    const {
+      letterNo,
+      postNo,
+      status,
+      stage,
+      letterContents,
+      fontNo,
+      info,
+      letterImg,
+    } = letter;
+
+    let finalLetterNo = letterNo;
+
+    const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+
+    const isNewTempLetter = status === 0 && letterNo === 0;
+    const isSubmitWithoutLetterNo = status === 1 && letterNo === 0;
+
+    // 예약발송 예외 처리
+    if (status === 1 && info?.reservationStatus === 1) {
+      const reservationTime = dayjs(info.reservationDt);
+
+      const limitTime = reservationTime.subtract(15, 'minute');
+
+      if (limitTime.isBefore(now)) {
+        throw new BadRequestException(
+          '예약 발송은 현재 시간보다 15분 뒤부터 가능합니다.',
+        );
+      }
+    }
+
+    if (status === 0) {
+      // 임시 저장
+      if (isNewTempLetter) {
+        const result = await this.createNewLetter({
+          userNo,
+          postNo,
+          status,
+          stage,
+          contents: letterContents,
+          fontNo,
+          info,
+          img: letterImg,
+          regDt: now,
+        });
+        finalLetterNo = result.letter_no;
+      } else {
+        await this.updateExistingLetter({
+          letterNo,
+          userNo,
+          postNo,
+          status,
+          stage,
+          contents: letterContents,
+          fontNo,
+          info,
+          img: letterImg,
+          now,
+        });
+      }
+    } else if (status === 1) {
+      // 작성 완료
+      let aligoStatus = 0;
+
+      let hashLetter: { letter_no: number; hash_no: string | null };
+
+      if (isSubmitWithoutLetterNo) {
+        hashLetter = await this.createNewLetter({
+          userNo,
+          postNo,
+          status,
+          stage,
+          contents: letterContents,
+          fontNo,
+          info,
+          img: letterImg,
+          regDt: now,
+        });
+        aligoStatus = 1;
+      } else {
+        hashLetter = await this.updateExistingLetter({
+          letterNo,
+          userNo,
+          postNo,
+          status,
+          stage,
+          contents: letterContents,
+          fontNo,
+          info,
+          img: letterImg,
+          now,
+        });
+        aligoStatus = 1;
+      }
+
+      if (!hashLetter) throw new BadRequestException('편지 생성 실패');
+      finalLetterNo = hashLetter.letter_no;
+
+      // 알림톡 발송
+      if (aligoStatus === 1) {
+        try {
+          const tmpURL = `${process.env.tmpURL}${hashLetter.hash_no}`;
+
+          const sendDateToAligo =
+            info.reservationStatus === 1 && !!info.reservationDt
+              ? dayjs(info.reservationDt).format('YYYYMMDDHHmmss')
+              : undefined;
+
+          const sendDateToUpdate =
+            info.reservationStatus === 1 && !!info.reservationDt
+              ? dayjs(info.reservationDt).format('YYYY-MM-DD HH:mm:ss')
+              : dayjs().format('YYYY-MM-DD HH:mm:ss');
+
+          // 알림톡 API 호출
+          await this.aligoService.sendAlimtalk({
+            senderName: info.sender,
+            recipientName: info.recipient,
+            recipientPhone: info.recipientPhone,
+            letterUrl: tmpURL,
+            sendDate: sendDateToAligo,
+          });
+
+          // 발송 시간 기록
+          await this.updateSendDt(finalLetterNo, sendDateToUpdate);
+        } catch (error) {
+          // 알림톡 실패 시 롤백 처리
+          try {
+            await this.rollbackLetter(finalLetterNo, now);
+          } catch (rollbackErr) {
+            console.log('🚀 롤백 중 에러 발생', rollbackErr);
+          }
+          throw new BadRequestException('알림톡 발송에 실패했습니다.');
+        }
+
+        // 마음온도 증가
+        await this.increaseHeartTemper(userNo, 1);
+
+        // 종속 처리
+        await this.dependentLetter(info.recipientPhone, finalLetterNo);
+      }
+    }
+
+    return finalLetterNo;
+  }
+
+  // 편지 작성(임시저장, 작성완료)
+  private async createNewLetter(
+    params: CreateNewLetterInput,
+  ): Promise<{ letter_no: number; hash_no: string }> {
+    const {
+      userNo,
+      postNo,
+      status,
+      stage,
+      contents,
+      fontNo,
+      info,
+      img,
+      regDt,
+    } = params;
+
+    const fontSize = 10;
+    const pageCnt = 1;
+
+    return await this.prisma.$transaction(async (tx) => {
+      // 1. tb_letter 생성
+      const letter = await tx.tb_letter.create({
+        data: {
+          user_no: userNo,
+          post_no: postNo,
+          status,
+          stage,
+          reg_dt: regDt ? new Date(regDt) : new Date(),
+        },
+      });
+
+      const letterNo = letter.letter_no;
+
+      // 2. hash_no 처리 (작성 완료 상태일 경우)
+      let hashNo = '';
+      if (status === 1) {
+        const [result]: any = await this.prisma.$queryRawUnsafe(
+          `
+            SELECT HEX(AES_ENCRYPT(?, ?)) AS hash_no
+          `,
+          letterNo.toString(),
+          process.env.HASH_KEY,
+        );
+
+        hashNo = result.hash_no;
+
+        await tx.tb_letter.update({
+          where: { letter_no: letterNo },
+          data: { hash_no: hashNo },
+        });
+      }
+
+      // 3. tb_letter_info 저장
+      await tx.tb_letter_info.create({
+        data: {
+          letter_no: letterNo,
+          user_no: userNo,
+          post_no: postNo,
+          font_no: fontNo,
+          font_size: fontSize,
+          page_cnt: pageCnt,
+          recipient: info.recipient,
+          recipient_phone: info.recipientPhone,
+          sender: info.sender,
+          sender_phone: info.senderPhone,
+          reservation_status: info.reservationStatus,
+          reservation_dt: info.reservationDt
+            ? new Date(info.reservationDt)
+            : new Date(),
+        },
+      });
+
+      // 4. tb_letter_contents 저장
+      await tx.tb_letter_contents.create({
+        data: {
+          letter_no: letterNo,
+          user_no: userNo,
+          post_no: postNo,
+          letter_contents: contents,
+          page_no: 1,
+          status: 1,
+          reg_dt: regDt ? new Date(regDt) : new Date(),
+        },
+      });
+
+      // 5. tb_letter_img 저장
+      for (let i = 0; i < img.length; i++) {
+        await tx.tb_letter_img.create({
+          data: {
+            letter_no: letterNo,
+            user_no: userNo,
+            post_no: postNo,
+            letter_img_url: img[i],
+            status: 1,
+            view_seq: i,
+            reg_dt: regDt ? new Date(regDt) : new Date(),
+          },
+        });
+      }
+
+      return {
+        letter_no: letterNo,
+        hash_no: hashNo,
+      };
+    });
+  }
+
+  // 임시저장한 편지 수정(임시저장, 작성완료)
+  async updateExistingLetter(
+    params: UpdateLetterInput,
+  ): Promise<{ letter_no: number; hash_no: string | null }> {
+    const {
+      letterNo,
+      userNo,
+      postNo,
+      status,
+      stage,
+      contents,
+      fontNo,
+      info,
+      img,
+      now,
+    } = params;
+    const fontSize = 10;
+    const pageCnt = 1;
+
+    return await this.prisma.$transaction(async (tx) => {
+      // hash_no 생성 (작성 완료 상태일 경우)
+      let encryptedHash: string | null = null;
+      if (status === 1) {
+        const result = await tx.$queryRaw<{ encrypted: string }[]>`
+          SELECT HEX(AES_ENCRYPT(${String(letterNo)}, ${process.env.HASH_KEY})) AS encrypted;
+        `;
+
+        encryptedHash = result[0]?.encrypted ?? null;
+      }
+
+      // 1. letter 상태 업데이트
+      await tx.tb_letter.update({
+        where: { letter_no: letterNo },
+        data: {
+          status,
+          stage,
+          upt_dt: new Date(now),
+          ...(status === 1 && { hash_no: encryptedHash }),
+        },
+      });
+
+      // 2. letter_info 수정
+      await tx.tb_letter_info.update({
+        where: { letter_no: letterNo },
+        data: {
+          font_no: fontNo,
+          font_size: fontSize,
+          page_cnt: pageCnt,
+          recipient: info.recipient,
+          recipient_phone: info.recipientPhone,
+          sender: info.sender,
+          sender_phone: info.senderPhone,
+          reservation_status: info.reservationStatus,
+          reservation_dt: info.reservationDt,
+        },
+      });
+
+      // 3. 기존 contents 비활성화
+      await tx.tb_letter_contents.updateMany({
+        where: { letter_no: letterNo },
+        data: { status: 0 },
+      });
+
+      // 4. 새로운 tb_letter_contents 저장
+      await tx.tb_letter_contents.create({
+        data: {
+          letter_no: letterNo,
+          user_no: userNo,
+          post_no: postNo,
+          letter_contents: contents,
+          page_no: 1,
+          status: 1,
+          reg_dt: new Date(now),
+        },
+      });
+
+      // 5. 기존 이미지 비활성화
+      await tx.tb_letter_img.updateMany({
+        where: { letter_no: letterNo },
+        data: { status: 0 },
+      });
+
+      // 6. 새로운 tb_letter_img 저장
+      for (let i = 0; i < img.length; i++) {
+        await tx.tb_letter_img.create({
+          data: {
+            letter_no: letterNo,
+            user_no: userNo,
+            post_no: postNo,
+            letter_img_url: img[i],
+            status: 1,
+            view_seq: i,
+            reg_dt: new Date(now),
+          },
+        });
+      }
+
+      // 7. hash_no 가져오기
+      const letter = await tx.tb_letter.findUnique({
+        where: { letter_no: letterNo },
+        select: { letter_no: true, hash_no: true },
+      });
+
+      return letter!;
+    });
+  }
+
+  // 알림톡 발송 시간 수정
+  private async updateSendDt(letterNo: number, sendDt: string) {
+    await this.prisma.tb_letter.update({
+      where: { letter_no: letterNo },
+      data: { send_dt: new Date(sendDt) },
+    });
+  }
+
+  // 발송한 편지 받는 번호의 유저가 있으면 바로 종속
+  private async dependentLetter(recipientPhone: string, letterNo: number) {
+    const user = await this.prisma.tb_user_profile.findFirst({
+      where: { user_phone: recipientPhone },
+      select: { user_no: true },
+    });
+
+    if (user) {
+      await this.prisma.tb_letter.update({
+        where: { letter_no: letterNo },
+        data: { recipient_user_no: user.user_no },
+      });
+    }
+  }
+
+  // 작성완료 편지 임시편지로 되돌리기(롤백)
+  private async rollbackLetter(letterNo: number, now: string) {
+    await this.prisma.$transaction(async (tx) => {
+      await tx.tb_letter.update({
+        where: { letter_no: letterNo },
+        data: {
+          status: 0,
+          upt_dt: new Date(now),
+          hash_no: '',
+        },
+      });
+
+      await tx.tb_letter_img.updateMany({
+        where: { letter_no: letterNo },
+        data: { status: 0 },
+      });
+    });
   }
 }

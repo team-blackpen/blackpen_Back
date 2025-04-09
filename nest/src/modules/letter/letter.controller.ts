@@ -17,6 +17,7 @@ import { LetterService } from './letter.service';
 
 import { PostThankDto } from './dto/post-thank.dto';
 import { DeleteLetterDto } from './dto/delete-letter.dto';
+import { CreateLetterDto } from './dto/create-letter.dto';
 
 import { LetterListItem } from './interfaces/letter-list-item.interface';
 import { LetterTmpListItem } from './interfaces/letter-tmp-list-item.interface';
@@ -137,15 +138,46 @@ export class LetterController {
     @Body() body: DeleteLetterDto,
   ) {
     const { letterList } = body;
-    console.log('🚀 ~ LetterController ~ body:', body);
-    console.log('🚀 ~ LetterController ~ letterList:', letterList);
 
     const deleteLetter = await this.letterService.deleteLetter(
       userNo,
       letterList,
     );
-    console.log('🚀 ~ LetterController ~ deleteLetter:', deleteLetter);
 
     return { deleteLetter };
+  }
+
+  // 임시 편지 삭제
+  // DELETE /letter/tmp/list
+  @UseGuards(JwtAuthGuard)
+  @Delete('tmp/list')
+  @SetMetadata('responseMsg', '임시 편지 삭제')
+  async deleteLetterTmp(
+    @User('user_no') userNo: number,
+    @Body() body: DeleteLetterDto,
+  ) {
+    const { letterList } = body;
+
+    const deleteLetter = await this.letterService.deleteLetter(
+      userNo,
+      letterList,
+      true,
+    );
+
+    return { deleteLetter };
+  }
+
+  // 편지 작성
+  // POST /letter
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  @SetMetadata('responseMsg', '편지 작성')
+  async createLetter(
+    @User('user_no') userNo: number,
+    @Body() body: CreateLetterDto,
+  ) {
+    const letterNo = await this.letterService.createLetter(userNo, body);
+
+    return { letterNo };
   }
 }

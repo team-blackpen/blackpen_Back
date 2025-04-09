@@ -27,6 +27,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       ? exception.getResponse()
       : '서버 내부 오류가 발생했습니다.';
 
+    console.log('🚀 ~ GlobalExceptionFilter ~ exception:', exception);
+
     res.status(status).json({
       result: -1,
       msg: typeof message === 'string' ? message : message['message'],
